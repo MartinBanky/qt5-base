@@ -100,6 +100,8 @@ public:
     NPNContext npnContext() const;
 #endif // OPENSSL_VERSION_NUMBER >= 0x1000100fL ...
 
+    void switchSslContext(SSL *ssl);
+
 protected:
     QSslContext();
     friend class QSharedPointer<QSslContext>;

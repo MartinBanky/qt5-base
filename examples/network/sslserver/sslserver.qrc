@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>hosts</file>
+        <file>server.ssltestserver.org.cert.pem</file>
+        <file>server.ssltestserver.org.key.pem</file>
+    </qresource>
+</RCC>

@@ -540,4 +540,9 @@ QString QSslContext::errorString() const
     return errorStr;
 }
 
+void QSslContext::switchSslContext(SSL *ssl)
+{
+    q_SSL_set_SSL_CTX(ssl, ctx);
+}
+
 QT_END_NAMESPACE
