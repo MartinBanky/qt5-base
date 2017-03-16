@@ -113,8 +113,7 @@
        \li Returned as a QVariantMap. The optional key 'keyid' contains the key
           identifier as a hex string stored in a QByteArray. The optional key
           'serial' contains the authority key serial number as a qlonglong.
-          Currently there is no support for the general names field of this
-          extension.
+          The optional key 'DirName' contains the general names field as a QString.
     \endtable
 
     In addition to the supported extensions above, many other common extensions

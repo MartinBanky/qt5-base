@@ -414,7 +414,36 @@ static QVariant x509ExtensionToValue(X509_EXTENSION *ext)
             }
 
             // issuer
-            // TODO: GENERAL_NAMES
+            if (auth_key->issuer) {
+                GENERAL_NAMES *gens = auth_key->issuer;
+                GENERAL_NAME *gen;
+
+                for (int i=0; i < sk_GENERAL_NAME_num(gens); ++i) {
+                    gen = sk_GENERAL_NAME_value(gens, i);
+
+                    if (gen->type == GEN_DIRNAME) {
+                        X509_NAME *name = gen->d.directoryName;
+
+                        QString dirName;
+                        QString stringData;
+                        QByteArray nameEntry;
+
+                        for (int i = 0; i < X509_NAME_entry_count(name); ++i) {
+                            X509_NAME_ENTRY *e = X509_NAME_get_entry(name, i);
+
+                            nameEntry = QSslCertificatePrivate::asn1ObjectName(X509_NAME_ENTRY_get_object(e));
+                            unsigned char *data = 0;
+                            int size = ASN1_STRING_to_UTF8(&data, X509_NAME_ENTRY_get_data(e));
+                            stringData = QString::fromUtf8((char*)data, size);
+                            dirName.append('/' + nameEntry + '=' + stringData);
+
+                            CRYPTO_free(data);
+                        }
+
+                        result[QLatin1String("DirName")] = dirName;
+                    }
+                }
+            }
 
             // serial
             if (auth_key->serial)
