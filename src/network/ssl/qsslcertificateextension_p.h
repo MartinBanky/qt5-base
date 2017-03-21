@@ -65,9 +65,11 @@ public:
     {
     }
 
+    qint32 nid;
     QString oid;
     QString name;
     QVariant value;
+    QByteArray nidValue;
     bool critical;
     bool supported;
 };

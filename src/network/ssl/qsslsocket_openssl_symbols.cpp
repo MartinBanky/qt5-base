@@ -176,10 +176,7 @@ DEFINEFUNC2(int, EVP_CIPHER_CTX_set_key_length, EVP_CIPHER_CTX *ctx, ctx, int ke
 DEFINEFUNC5(int, EVP_CipherInit, EVP_CIPHER_CTX *ctx, ctx, const EVP_CIPHER *type, type, const unsigned char *key, key, const unsigned char *iv, iv, int enc, enc, return 0, return);
 DEFINEFUNC5(int, EVP_CipherUpdate, EVP_CIPHER_CTX *ctx, ctx, unsigned char *out, out, int *outl, outl, const unsigned char *in, in, int inl, inl, return 0, return);
 DEFINEFUNC3(int, EVP_CipherFinal, EVP_CIPHER_CTX *ctx, ctx, unsigned char *out, out, int *outl, outl, return 0, return);
-DEFINEFUNC(const EVP_CIPHER *, EVP_des_cbc, DUMMYARG, DUMMYARG, return 0, return)
-DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3_cbc, DUMMYARG, DUMMYARG, return 0, return)
-DEFINEFUNC(const EVP_CIPHER *, EVP_rc2_cbc, DUMMYARG, DUMMYARG, return 0, return)
-DEFINEFUNC3(int, EVP_PKEY_assign, EVP_PKEY *a, a, int b, b, char *c, c, return -1, return)
+DEFINEFUNC3(int, EVP_PKEY_assign, EVP_PKEY *a, a, int b, b, void *c, c, return 0, return)
 DEFINEFUNC2(int, EVP_PKEY_set1_RSA, EVP_PKEY *a, a, RSA *b, b, return -1, return)
 DEFINEFUNC2(int, EVP_PKEY_set1_DSA, EVP_PKEY *a, a, DSA *b, b, return -1, return)
 #ifndef OPENSSL_NO_EC
@@ -364,6 +361,190 @@ DEFINEFUNC(void, X509_free, X509 *a, a, return, DUMMYARG)
 DEFINEFUNC2(X509_EXTENSION *, X509_get_ext, X509 *a, a, int b, b, return 0, return)
 DEFINEFUNC(int, X509_get_ext_count, X509 *a, a, return 0, return)
 DEFINEFUNC4(void *, X509_get_ext_d2i, X509 *a, a, int b, b, int *c, c, int *d, d, return 0, return)
+DEFINEFUNC(void, ASN1_OBJECT_free, ASN1_OBJECT *a, a, return, DUMMYARG)
+DEFINEFUNC(void, ASN1_STRING_free, ASN1_STRING *a, a, return, DUMMYARG)
+DEFINEFUNC(ASN1_STRING *, ASN1_STRING_type_new, int a, a, return 0, return);
+DEFINEFUNC2(int, BN_hex2bn, BIGNUM **a, a, char *b, b, return 0, return)
+DEFINEFUNC(void, BN_free, BIGNUM *a, a, return, DUMMYARG)
+DEFINEFUNC(BIGNUM *, BN_new, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC2(int, BN_set_word, BIGNUM *a, a, unsigned long b, b, return 0, return)
+DEFINEFUNC2(ASN1_INTEGER *, BN_to_ASN1_INTEGER, BIGNUM *a, a, ASN1_INTEGER *b, b, return 0, return)
+DEFINEFUNC(int, DSA_generate_key, DSA *a, a, return 0, return)
+DEFINEFUNC7(int, DSA_generate_parameters_ex, DSA *a, a, int b, b, const unsigned char *c, c, int d, d, int *e, e, unsigned long *f, f, BN_GENCB *g, g, return 0, return)
+DEFINEFUNC(EC_GROUP *, EC_GROUP_new, const EC_METHOD *a, a, return 0, return)
+DEFINEFUNC(int, EC_KEY_generate_key, EC_KEY *a, a, return 0, return)
+DEFINEFUNC(const EC_METHOD *, EC_GFp_mont_method, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(EC_KEY *, EC_KEY_new, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(void, EVP_MD_CTX_init, EVP_MD_CTX *a, a, return 0, return)
+#ifndef OPENSSL_NO_MD2
+DEFINEFUNC(const EVP_MD *, EVP_md2, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_MD4
+DEFINEFUNC(const EVP_MD *, EVP_md4, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_MD5
+DEFINEFUNC(const EVP_MD *, EVP_md5, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_SHA
+DEFINEFUNC(const EVP_MD *, EVP_sha, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_MD *, EVP_sha1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_MD *, EVP_dss1, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_SHA256
+DEFINEFUNC(const EVP_MD *, EVP_sha224, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_MD *, EVP_sha256, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_SHA512
+DEFINEFUNC(const EVP_MD *, EVP_sha384, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_MD *, EVP_sha512, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_MDC2
+DEFINEFUNC(const EVP_MD *, EVP_mdc2, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_RIPEMD
+DEFINEFUNC(const EVP_MD *, EVP_ripemd160, DUMMYARG, DUMMYARG, return 0, return)
+#endif
+#ifndef OPENSSL_NO_DES
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_des_ede3_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_desx_cbc, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_DES
+#ifndef OPENSSL_NO_RC4
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc4, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc4_40, DUMMYARG, DUMMYARG, return 0, return)
+#ifndef OPENSSL_NO_MD5
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc4_hmac_md5, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_MD5
+#endif // OPENSSL_NO_RC4
+#ifndef OPENSSL_NO_IDEA
+DEFINEFUNC(const EVP_CIPHER *, EVP_idea_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_idea_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_idea_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_idea_cbc, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_IDEA
+#ifndef OPENSSL_NO_RC2
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc2_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc2_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc2_40_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc2_64_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc2_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc2_ofb, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_RC2
+#ifndef OPENSSL_NO_BF
+DEFINEFUNC(const EVP_CIPHER *, EVP_bf_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_bf_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_bf_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_bf_ofb, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_BF
+#ifndef OPENSSL_NO_CAST
+DEFINEFUNC(const EVP_CIPHER *, EVP_cast5_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_cast5_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_cast5_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_cast5_ofb, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_CAST
+#ifndef OPENSSL_NO_RC5
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc5_32_12_16_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc5_32_12_16_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc5_32_12_16_cfb64, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_rc5_32_12_16_ofb, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_RC5
+#ifndef OPENSSL_NO_AES
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cfb128, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_ctr, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_ccm, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_gcm, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_xts, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_cfb128, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_ctr, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_ccm, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_192_gcm, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_cfb128, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_ctr, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_ccm, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_gcm, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_xts, DUMMYARG, DUMMYARG, return 0, return)
+#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cbc_hmac_sha1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_cbc_hmac_sha1, DUMMYARG, DUMMYARG, return 0, return)
+#endif // !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
+#ifndef OPENSSL_NO_SHA256
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_128_cbc_hmac_sha256, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_aes_256_cbc_hmac_sha256, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_SHA256
+#endif // OPENSSL_NO_AES
+#ifndef OPENSSL_NO_CAMELLIA
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_128_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_128_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_128_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_128_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_128_cfb128, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_128_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_192_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_192_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_192_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_192_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_192_cfb128, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_192_ofb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_256_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_256_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_256_cfb1, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_256_cfb8, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_256_cfb128, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_camellia_256_ofb, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_CAMELLIA
+#ifndef OPENSSL_NO_SEED
+DEFINEFUNC(const EVP_CIPHER *, EVP_seed_ecb, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_seed_cbc, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_seed_cfb128, DUMMYARG, DUMMYARG, return 0, return)
+DEFINEFUNC(const EVP_CIPHER *, EVP_seed_ofb, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_SEED
+DEFINEFUNC4(int, RSA_generate_key_ex, RSA *a, a, int b, b, BIGNUM *c, c, BN_GENCB *d, d, return 0, return)
+DEFINEFUNC3(int, X509_add_ext, X509 *a, a, X509_EXTENSION *b, b, int c, c, return 0, return)
+DEFINEFUNC4(void, X509_ALGOR_get0, ASN1_OBJECT **a, a, int *b, b, void **c, c, X509_ALGOR *d, d, return, DUMMYARG)
+DEFINEFUNC(void, X509_EXTENSION_free, X509_EXTENSION *a, a, return, DUMMYARG)
+DEFINEFUNC2(ASN1_TIME *, X509_gmtime_adj, ASN1_TIME *a, a, long b, b, return -1, return)
+DEFINEFUNC7(int, X509_NAME_add_entry_by_txt, X509_NAME *a, a, const char *b, b, int c, c, const unsigned char *d, d, int e, e, int f, f, int g, g, return 0, return)
+DEFINEFUNC(void, X509_NAME_free, X509_NAME *a, a, return, DUMMYARG);
+DEFINEFUNC(X509 *, X509_new, DUMMYARG, DUMMYARG, return -1, return)
+DEFINEFUNC2(int, X509_set_issuer_name, X509 *a, a, X509_NAME *b, b, return 0, return)
+DEFINEFUNC2(int, X509_set_pubkey, X509 *a, a, EVP_PKEY *b, b, return 0, return)
+DEFINEFUNC2(int, X509_set_serialNumber, X509 *a, a, ASN1_INTEGER *b, b, return 0, return)
+DEFINEFUNC2(int, X509_set_subject_name, X509 *a, a, X509_NAME *b, b, return 0, return)
+DEFINEFUNC2(int, X509_set_version, X509 *a, a, long b, b, return 0, return)
+DEFINEFUNC3(int, X509_sign, X509 *a, a, EVP_PKEY *b, b, const EVP_MD *c, c, return 0, return)
+DEFINEFUNC4(X509_EXTENSION *, X509V3_EXT_conf_nid, LHASH_OF(CONF_VALUE) *a, a, X509V3_CTX *b, b, int c, c, char *d, d, return 0, return)
+DEFINEFUNC6(void, X509V3_set_ctx, X509V3_CTX *a, a, X509 *b, b, X509 *c, c, X509_REQ *d, d, X509_CRL *e, e, int f, f, return 0, return)
 DEFINEFUNC(const X509V3_EXT_METHOD *, X509V3_EXT_get, X509_EXTENSION *a, a, return 0, return)
 DEFINEFUNC(void *, X509V3_EXT_d2i, X509_EXTENSION *a, a, return 0, return)
 DEFINEFUNC(int, X509_EXTENSION_get_critical, X509_EXTENSION *a, a, return 0, return)
@@ -972,6 +1153,191 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(X509_get_ext)
     RESOLVEFUNC(X509_get_ext_count)
     RESOLVEFUNC(X509_get_ext_d2i)
+    RESOLVEFUNC(ASN1_OBJECT_free)
+    RESOLVEFUNC(ASN1_STRING_free)
+    RESOLVEFUNC(ASN1_STRING_type_new)
+    RESOLVEFUNC(BN_hex2bn)
+    RESOLVEFUNC(BN_free)
+    RESOLVEFUNC(BN_new)
+    RESOLVEFUNC(BN_set_word)
+    RESOLVEFUNC(BN_to_ASN1_INTEGER)
+    RESOLVEFUNC(DSA_generate_key)
+    RESOLVEFUNC(DSA_generate_parameters_ex)
+    RESOLVEFUNC(EC_GROUP_new)
+    RESOLVEFUNC(EC_KEY_generate_key)
+    RESOLVEFUNC(EC_GFp_mont_method)
+    RESOLVEFUNC(EC_KEY_new)
+    RESOLVEFUNC(EVP_MD_CTX_init)
+#ifndef OPENSSL_NO_MD2
+    RESOLVEFUNC(EVP_md2)
+#endif
+#ifndef OPENSSL_NO_MD4
+    RESOLVEFUNC(EVP_md4)
+#endif
+#ifndef OPENSSL_NO_MD5
+    RESOLVEFUNC(EVP_md5)
+#endif
+#ifndef OPENSSL_NO_SHA
+    RESOLVEFUNC(EVP_sha)
+    RESOLVEFUNC(EVP_sha1)
+    RESOLVEFUNC(EVP_dss)
+    RESOLVEFUNC(EVP_dss1)
+#endif
+#ifndef OPENSSL_NO_SHA256
+    RESOLVEFUNC(EVP_sha224)
+    RESOLVEFUNC(EVP_sha256)
+#endif
+#ifndef OPENSSL_NO_SHA512
+    RESOLVEFUNC(EVP_sha384)
+    RESOLVEFUNC(EVP_sha512)
+#endif
+#ifndef OPENSSL_NO_MDC2
+    RESOLVEFUNC(EVP_mdc2)
+#endif
+#ifndef OPENSSL_NO_RIPEMD
+    RESOLVEFUNC(EVP_ripemd160)
+#endif
+#ifndef OPENSSL_NO_DES
+    RESOLVEFUNC(EVP_des_ecb)
+    RESOLVEFUNC(EVP_des_ede)
+    RESOLVEFUNC(EVP_des_ede3)
+    RESOLVEFUNC(EVP_des_ede_ecb)
+    RESOLVEFUNC(EVP_des_ede3_ecb)
+    RESOLVEFUNC(EVP_des_cfb64)
+    RESOLVEFUNC(EVP_des_cfb1)
+    RESOLVEFUNC(EVP_des_cfb8)
+    RESOLVEFUNC(EVP_des_ede_cfb64)
+    RESOLVEFUNC(EVP_des_ede3_cfb64)
+    RESOLVEFUNC(EVP_des_ede3_cfb1)
+    RESOLVEFUNC(EVP_des_ede3_cfb8)
+    RESOLVEFUNC(EVP_des_ofb)
+    RESOLVEFUNC(EVP_des_ede_ofb)
+    RESOLVEFUNC(EVP_des_ede3_ofb)
+    RESOLVEFUNC(EVP_des_cbc)
+    RESOLVEFUNC(EVP_des_ede_cbc)
+    RESOLVEFUNC(EVP_des_ede3_cbc)
+    RESOLVEFUNC(EVP_desx_cbc)
+#endif // OPENSSL_NO_DES
+#ifndef OPENSSL_NO_RC4
+    RESOLVEFUNC(EVP_rc4)
+    RESOLVEFUNC(EVP_rc4_40)
+#ifndef OPENSSL_NO_MD5
+    RESOLVEFUNC(EVP_rc4_hmac_md5)
+#endif // OPENSSL_NO_MD5
+#endif // OPENSSL_NO_RC4
+#ifndef OPENSSL_NO_IDEA
+    RESOLVEFUNC(EVP_idea_ecb)
+    RESOLVEFUNC(EVP_idea_cfb64)
+    RESOLVEFUNC(EVP_idea_ofb)
+    RESOLVEFUNC(EVP_idea_cbc)
+#endif // OPENSSL_NO_IDEA
+#ifndef OPENSSL_NO_RC2
+    RESOLVEFUNC(EVP_rc2_ecb)
+    RESOLVEFUNC(EVP_rc2_cbc)
+    RESOLVEFUNC(EVP_rc2_40_cbc)
+    RESOLVEFUNC(EVP_rc2_64_cbc)
+    RESOLVEFUNC(EVP_rc2_cfb64)
+    RESOLVEFUNC(EVP_rc2_ofb)
+#endif // OPENSSL_NO_RC2
+#ifndef OPENSSL_NO_BF
+    RESOLVEFUNC(EVP_bf_ecb)
+    RESOLVEFUNC(EVP_bf_cbc)
+    RESOLVEFUNC(EVP_bf_cfb64)
+    RESOLVEFUNC(EVP_bf_ofb)
+#endif // OPENSSL_NO_BF
+#ifndef OPENSSL_NO_CAST
+    RESOLVEFUNC(EVP_cast5_ecb)
+    RESOLVEFUNC(EVP_cast5_cbc)
+    RESOLVEFUNC(EVP_cast5_cfb64)
+    RESOLVEFUNC(EVP_cast5_ofb)
+#endif // OPENSSL_NO_CAST
+#ifndef OPENSSL_NO_RC5
+    RESOLVEFUNC(EVP_rc5_32_12_16_cbc)
+    RESOLVEFUNC(EVP_rc5_32_12_16_ecb)
+    RESOLVEFUNC(EVP_rc5_32_12_16_cfb64)
+    RESOLVEFUNC(EVP_rc5_32_12_16_ofb)
+#endif // OPENSSL_NO_RC5
+#ifndef OPENSSL_NO_AES
+    RESOLVEFUNC(EVP_aes_128_ecb)
+    RESOLVEFUNC(EVP_aes_128_cbc)
+    RESOLVEFUNC(EVP_aes_128_cfb1)
+    RESOLVEFUNC(EVP_aes_128_cfb8)
+    RESOLVEFUNC(EVP_aes_128_cfb128)
+    RESOLVEFUNC(EVP_aes_128_ofb)
+    RESOLVEFUNC(EVP_aes_128_ctr)
+    RESOLVEFUNC(EVP_aes_128_ccm)
+    RESOLVEFUNC(EVP_aes_128_gcm)
+    RESOLVEFUNC(EVP_aes_128_xts)
+    RESOLVEFUNC(EVP_aes_192_ecb)
+    RESOLVEFUNC(EVP_aes_192_cbc)
+    RESOLVEFUNC(EVP_aes_192_cfb1)
+    RESOLVEFUNC(EVP_aes_192_cfb8)
+    RESOLVEFUNC(EVP_aes_192_cfb128)
+    RESOLVEFUNC(EVP_aes_192_ofb)
+    RESOLVEFUNC(EVP_aes_192_ctr)
+    RESOLVEFUNC(EVP_aes_192_ccm)
+    RESOLVEFUNC(EVP_aes_192_gcm)
+    RESOLVEFUNC(EVP_aes_256_ecb)
+    RESOLVEFUNC(EVP_aes_256_cbc)
+    RESOLVEFUNC(EVP_aes_256_cfb1)
+    RESOLVEFUNC(EVP_aes_256_cfb8)
+    RESOLVEFUNC(EVP_aes_256_cfb128)
+    RESOLVEFUNC(EVP_aes_256_ofb)
+    RESOLVEFUNC(EVP_aes_256_ctr)
+    RESOLVEFUNC(EVP_aes_256_ccm)
+    RESOLVEFUNC(EVP_aes_256_gcm)
+    RESOLVEFUNC(EVP_aes_256_xts)
+#if !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
+    RESOLVEFUNC(EVP_aes_128_cbc_hmac_sha1)
+    RESOLVEFUNC(EVP_aes_256_cbc_hmac_sha1)
+#endif // !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
+#ifndef OPENSSL_NO_SHA256
+    RESOLVEFUNC(EVP_aes_128_cbc_hmac_sha256)
+    RESOLVEFUNC(EVP_aes_256_cbc_hmac_sha256)
+#endif // OPENSSL_NO_SHA256
+#endif // OPENSSL_NO_AES
+#ifndef OPENSSL_NO_CAMELLIA
+    RESOLVEFUNC(EVP_camellia_128_ecb)
+    RESOLVEFUNC(EVP_camellia_128_cbc)
+    RESOLVEFUNC(EVP_camellia_128_cfb1)
+    RESOLVEFUNC(EVP_camellia_128_cfb8)
+    RESOLVEFUNC(EVP_camellia_128_cfb128)
+    RESOLVEFUNC(EVP_camellia_128_ofb)
+    RESOLVEFUNC(EVP_camellia_192_ecb)
+    RESOLVEFUNC(EVP_camellia_192_cbc)
+    RESOLVEFUNC(EVP_camellia_192_cfb1)
+    RESOLVEFUNC(EVP_camellia_192_cfb8)
+    RESOLVEFUNC(EVP_camellia_192_cfb128)
+    RESOLVEFUNC(EVP_camellia_192_ofb)
+    RESOLVEFUNC(EVP_camellia_256_ecb)
+    RESOLVEFUNC(EVP_camellia_256_cbc)
+    RESOLVEFUNC(EVP_camellia_256_cfb1)
+    RESOLVEFUNC(EVP_camellia_256_cfb8)
+    RESOLVEFUNC(EVP_camellia_256_cfb128)
+    RESOLVEFUNC(EVP_camellia_256_ofb)
+#endif // OPENSSL_NO_CAMELLIA
+#ifndef OPENSSL_NO_SEED
+    RESOLVEFUNC(EVP_seed_ecb)
+    RESOLVEFUNC(EVP_seed_cbc)
+    RESOLVEFUNC(EVP_seed_cfb128)
+    RESOLVEFUNC(EVP_seed_ofb)
+#endif // OPENSSL_NO_SEED
+    RESOLVEFUNC(RSA_generate_key_ex)
+    RESOLVEFUNC(X509_add_ext)
+    RESOLVEFUNC(X509_ALGOR_get0)
+    RESOLVEFUNC(X509_EXTENSION_free)
+    RESOLVEFUNC(X509_gmtime_adj)
+    RESOLVEFUNC(X509_NAME_add_entry_by_txt)
+    RESOLVEFUNC(X509_NAME_free)
+    RESOLVEFUNC(X509_new)
+    RESOLVEFUNC(X509_set_issuer_name)
+    RESOLVEFUNC(X509_set_pubkey)
+    RESOLVEFUNC(X509_set_serialNumber)
+    RESOLVEFUNC(X509_set_subject_name)
+    RESOLVEFUNC(X509_set_version)
+    RESOLVEFUNC(X509_sign)
+    RESOLVEFUNC(X509V3_EXT_conf_nid)
+    RESOLVEFUNC(X509V3_set_ctx)
     RESOLVEFUNC(X509V3_EXT_get)
     RESOLVEFUNC(X509V3_EXT_d2i)
     RESOLVEFUNC(X509_EXTENSION_get_critical)

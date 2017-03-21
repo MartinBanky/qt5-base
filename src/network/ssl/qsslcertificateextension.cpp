@@ -172,6 +172,14 @@ QSslCertificateExtension &QSslCertificateExtension::operator=(const QSslCertific
 */
 
 /*!
+    Returns the NID of this extension.
+ */
+qint32 QSslCertificateExtension::nid() const
+{
+    return d->nid;
+}
+
+/*!
     Returns the ASN.1 OID of this extension.
  */
 QString QSslCertificateExtension::oid() const
@@ -186,6 +194,13 @@ QString QSslCertificateExtension::oid() const
 QString QSslCertificateExtension::name() const
 {
     return d->name;
+}
+/*!
+    Returns the value of the NID setting for this extension.
+ */
+QByteArray QSslCertificateExtension::nidValue() const
+{
+    return d->nidValue;
 }
 
 /*!
@@ -216,6 +231,37 @@ bool QSslCertificateExtension::isCritical() const
 bool QSslCertificateExtension::isSupported() const
 {
     return d->supported;
+}
+
+/*!
+    Sets the NID of this extension. To set the X509v3 Authority Key
+    Identifier, which is defined as:
+
+    \snippet code/src_network_ssl_qsslcertificate.cpp 1
+
+    You would just do:
+
+    \snippet code/src_network_ssl_qsslcertificate.cpp 2
+
+    Which would generate:
+
+    \snippet code/src_network_ssl_qsslcertificate.cpp 3
+
+    To find more NID definitions, get a copy of the OpenSSL
+    source code, and look at crypto/objects/obj_mac.h.
+ */
+void QSslCertificateExtension::setNid(qint32 nid)
+{
+    d->nid = nid;
+}
+
+/*!
+    Sets the value of the extension. Takes the same values as
+    what an openssl.cnf file would take.
+ */
+void QSslCertificateExtension::setNidValue(const QByteArray nidValue)
+{
+    d->nidValue = nidValue;
 }
 
 QT_END_NAMESPACE

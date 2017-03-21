@@ -80,6 +80,10 @@ public:
         HostNameMismatch,
         NoSslSupport,
         CertificateBlacklisted,
+        UnableToDecodeSubjectPrivateKey,
+        CommonNameInvalid,
+        SignatureAlgorithmUnavailable,
+        InvalidSigningKey,
         UnspecifiedError = -1
     };
 
