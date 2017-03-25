@@ -83,9 +83,13 @@
     \value AuthorityIssuerSerialNumberMismatch
     \value NoPeerCertificate
     \value HostNameMismatch
-    \value UnspecifiedError
     \value NoSslSupport
     \value CertificateBlacklisted
+    \value UnableToDecodeSubjectPrivateKey
+    \value CommonNameInvalid
+    \value SignatureAlgorithmUnavailable
+    \value InvalidSigningKey
+    \value UnspecifiedError
 
     \sa QSslError::errorString()
 */

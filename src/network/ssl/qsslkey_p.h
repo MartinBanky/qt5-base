@@ -67,8 +67,10 @@ class QSslKeyPrivate
 {
 public:
     inline QSslKeyPrivate()
-        : algorithm(QSsl::Opaque)
-        , opaque(0)
+        : algorithm(QSsl::Rsa)
+        , bitSize(2048)
+        , cipher(QSslKey::DesEde3Cbc)
+        , pKey(0)
     {
         clear(false);
     }
@@ -93,28 +95,41 @@ public:
     QByteArray toPem(const QByteArray &passPhrase) const;
     Qt::HANDLE handle() const;
 
+#ifndef QT_NO_OPENSSL
+    typedef const EVP_CIPHER *(*CipherType)();
+
+    const EVP_CIPHER *getCipherStructure() const;
+#endif
+
+    void generatePrivateKey();
+
     bool isNull;
     QSsl::KeyType type;
     QSsl::KeyAlgorithm algorithm;
 
-    enum Cipher {
-        DesCbc,
-        DesEde3Cbc,
-        Rc2Cbc
-    };
+    qint32 bitSize;
+    QSslKey::Cipher cipher;
 
-    Q_AUTOTEST_EXPORT static QByteArray decrypt(Cipher cipher, const QByteArray &data, const QByteArray &key, const QByteArray &iv);
-    Q_AUTOTEST_EXPORT static QByteArray encrypt(Cipher cipher, const QByteArray &data, const QByteArray &key, const QByteArray &iv);
+    Q_AUTOTEST_EXPORT static QByteArray decrypt(QSslKey::Cipher cipher, const QByteArray &data, const QByteArray &key, const QByteArray &iv);
+    Q_AUTOTEST_EXPORT static QByteArray encrypt(QSslKey::Cipher cipher, const QByteArray &data, const QByteArray &key, const QByteArray &iv);
 
+    /*
+     * EVP_PKEY has a pkey union already to handle the different
+     * key types (Rsa, Dsa, Dh, and Ec). Plus, we need access
+     * to the evp_pkey_st during certificate creation. Otherwise,
+     * we either leak memory by not freeing the new EVP_PKEYs that
+     * are needed or when we free the new EVP_PKEYs, the Rsa, Dsa,
+     * Dh, or Ec keys get freed as well. Also, the EVP_PKEYs have
+     * to be pointers, because openssl uses **EVP_PKEY for some
+     * of it's function calls. Not good for batch creating
+     * certificates. You would have to close your QSslKey object
+     * and reopen it every time you wanted to create a new certificate.
+     * The functionality stays the same. Just the access to the keys
+     * needs to change to add pKey->pkey.{rsa,dsa,dh,ec} to the front
+     * of the key you want to access.
+     */
 #ifndef QT_NO_OPENSSL
-    union {
-        EVP_PKEY *opaque;
-        RSA *rsa;
-        DSA *dsa;
-#ifndef OPENSSL_NO_EC
-        EC_KEY *ec;
-#endif
-    };
+    EVP_PKEY *pKey;
 #else
     Qt::HANDLE opaque;
     QByteArray derData;

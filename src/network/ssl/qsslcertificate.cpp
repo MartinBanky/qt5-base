@@ -111,6 +111,29 @@
     \value EmailAddress The email address associated with the certificate
 */
 
+/*!
+    \enum QSslCertificate::SignatureAlgorithm
+
+    Describes the signature algorithms that you can pass to
+    QSslCertificate::setSignatureAlgorithm() or receive from
+    QSslCertificate::signatureAlgorithm(). The signature algorithm
+    is the algorithm used by the certificate signer to sign the
+    certificate, whether from a Certificate Authority or self-signed.
+
+    \value md2WithRSAEncryption The Signature Algorithm is md2WithRSAEncryption.
+    \value md4WithRSAEncryption The Signature Algorithm is md4WithRSAEncryption.
+    \value md5WithRSAEncryption The Signature Algorithm is md5WithRSAEncryption.
+    \value shaWithRSAEncryption The Signature Algorithm is shaWithRSAEncryption.
+    \value sha1WithRSAEncryption The  Signature Algorithm is sha1WithRSAEncryption.
+    \value dsaWithSHA1 The Signature Algorithm is dsaWithSHA1.
+    \value sha224WithRSAEncryption The Signature Algorithm is sha224WithRSAEncryption.
+    \value sha256WithRSAEncryption The Signature Algorithm is sha256WithRSAEncryption.
+    \value sha384WithRSAEncryption The Signature Algorithm is sha384WithRSAEncryption.
+    \value sha512WithRSAEncryption The Signature Algorithm is sha512WithRSAEncryption.
+    \value mdc2WithRSA The Signature Algorithm is mdc2WithRSA.
+    \value ripemd160WithRSA The Signature Algorithm is ripemd160WithRSA.
+*/
+
 #include <QtNetwork/qtnetworkglobal.h>
 #ifndef QT_NO_OPENSSL
 #include "qsslsocket_openssl_symbols_p.h"
@@ -168,6 +191,16 @@ QSslCertificate::QSslCertificate(const QSslCertificate &other) : d(other.d)
 }
 
 /*!
+    Constructs a null certificate
+ */
+QSslCertificate::QSslCertificate()
+    : d(new QSslCertificatePrivate)
+{
+    QSslSocketPrivate::ensureInitialized();
+    d->x509 = q_X509_new();
+}
+
+/*!
     Destroys the QSslCertificate.
 */
 QSslCertificate::~QSslCertificate()
@@ -216,6 +249,91 @@ QSslCertificate &QSslCertificate::operator=(const QSslCertificate &other)
 
     \sa clear()
 */
+
+/*!
+    \fn QSslError::SslError QSslCertificate::generateCertificate() const
+    Generates the new certificate. Call this after calling, at a
+    minimum, setDuration(), setPrivateKey(), setSignatureAlgorithm(),
+    and setSubjectCommonName().
+
+    \note You can only sign certificates with either RSA or DSA keys.
+    Also, make sure you choose the right signature algorithm for the
+    key that is being used. When signing with a DSA key you can only
+    choose dsaWithSHA1. RSA can use the rest, but not dsaWithSHA1.
+ */
+
+/*!
+    \fn void QSslCertificate::setCertificateAuthority(QSslCertificate *certificate, const QSslKey &key) const
+    Sets the Certificate Authority certificate
+    that will be used to sign new certificates.
+ */
+
+/*!
+    \fn void QSslCertificate::setDuration(qint32 days) const
+    Sets how long the new certificate will be valid for.
+ */
+
+/*!
+    \fn void QSslCertificate::setPrivateKey(const QSslKey &privateKey) const
+    Sets the private key to use to generate the new certificate's public key.
+ */
+
+/*!
+    \fn void QSslCertificate::setSignatureAlgorithm(const QSslCertificate::SignatureAlgorithm signatureAlgorithm) const
+    Sets the signature algorithm that will be used to sign the certificate.
+ */
+
+/*!
+    \fn void QSslCertificate::setSubjectCountry(const QByteArray &country) const
+    Sets the certificate subject's country. "C"
+ */
+
+/*!
+    \fn void QSslCertificate::setSubjectState(const QByteArray &state) const
+    Sets the certificate subject's state or province. "ST"
+ */
+
+/*!
+    \fn void QSslCertificate::setSubjectLocation(const QByteArray &location) const
+    Sets the certificate subject's locality. "L"
+ */
+
+/*!
+    \fn void QSslCertificate::setSubjectOrginization(const QByteArray &organization) const
+    Sets the certificate subject's name of the organization. "O"
+ */
+
+/*!
+    \fn void QSslCertificate::setSubjectOrginizationUnit(const QByteArray &oraganiztionUnit) const
+    Sets the certificate subject's organizational unit name. "OU"
+ */
+
+/*!
+    \fn void QSslCertificate::setSubjectCommonName(const QByteArray &commonName) const
+    Sets the certificate subject's common name; most often this is
+    used to store the server FQDN or host name. "CN"
+ */
+
+/*!
+    \fn void QSslCertificate::setSubjectEmailAddress(const QByteArray &emailAddress) const
+    Sets the certificate subject's email address.
+ */
+
+/*!
+    \fn void QSslCertificate::setVersion(qint32 version) const
+    Sets the X509 certificate version to use for new certificates.
+ */
+
+/*!
+    \fn void QSslCertificate::setX509Extensions(const QList<QSslCertificateExtension *> &extensionsList) const
+    Sets the X509 extensions to use for new certificates.
+ */
+
+/*!
+    \fn QSslCertificate::SignatureAlgorithm QSslCertificate::signatureAlgorithm() const
+    Returns the signature algorithm that was(/will be) used to sign
+    the certificate.
+ */
 
 #if QT_DEPRECATED_SINCE(5,0)
 /*!
@@ -648,6 +766,47 @@ static const char *const certificate_blacklist[] = {
     "27:b1",                                           "NIC CA 2014", // intermediate certificate from NIC India (2014)
     0
 };
+/*!
+    \internal
+*/
+QSslCertificatePrivate::QSslCertificatePrivate()
+        : null(true)
+        , version(2)
+        , privateKey(0)
+        , country()
+        , state()
+        , location()
+        , organization()
+        , organizationUnit()
+        , commonName()
+        , emailAddress()
+        , distinguishedNameQualifier()
+        , nidToSigAlgorithm()
+        , extensionsList()
+        , certificateAuthorityCertificate(0)
+        , certificateAuthorityKey(0)
+        , signatureAlgorithm(QSslCertificate::sha256WithRSAEncryption)
+        , x509(0)
+{
+    /*
+     * Used to map the NID's to the correct
+     * SignatureAlgorithm enum value
+     */
+    nidToSigAlgorithm << md2WithRSAEncryptionNid
+                      << md4WithRSAEncryptionNid
+                      << md5WithRSAEncryptionNid
+                      << shaWithRSAEncryptionNid
+                      << sha1WithRSAEncryptionNid
+                      << dsaWithSHA1Nid
+                      << sha224WithRSAEncryptionNid
+                      << sha256WithRSAEncryptionNid
+                      << sha384WithRSAEncryptionNid
+                      << sha512WithRSAEncryptionNid
+                      << mdc2WithRSANid
+                      << ripemd160WithRSANid;
+
+    QSslSocketPrivate::ensureInitialized();
+}
 
 bool QSslCertificatePrivate::isBlacklisted(const QSslCertificate &certificate)
 {

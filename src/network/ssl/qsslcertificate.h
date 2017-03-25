@@ -54,6 +54,7 @@
 #include <QtCore/qsharedpointer.h>
 #include <QtCore/qmap.h>
 #include <QtNetwork/qssl.h>
+#include <QtNetwork/qsslerror.h>
 
 #ifndef QT_NO_SSL
 
@@ -71,6 +72,7 @@ class QSslCertificate;
 Q_NETWORK_EXPORT uint qHash(const QSslCertificate &key, uint seed = 0) Q_DECL_NOTHROW;
 
 class QSslCertificatePrivate;
+
 class Q_NETWORK_EXPORT QSslCertificate
 {
 public:
@@ -86,14 +88,48 @@ public:
         EmailAddress
     };
 
+    enum SignatureAlgorithm {
+        md2WithRSAEncryption,
+        md4WithRSAEncryption,
+        md5WithRSAEncryption,
+        shaWithRSAEncryption,
+        sha1WithRSAEncryption,
+        dsaWithSHA1,
+        sha224WithRSAEncryption,
+        sha256WithRSAEncryption,
+        sha384WithRSAEncryption,
+        sha512WithRSAEncryption,
+        mdc2WithRSA,
+        ripemd160WithRSA,
+    };
+
+    QSslCertificate();
     explicit QSslCertificate(QIODevice *device, QSsl::EncodingFormat format = QSsl::Pem);
-    explicit QSslCertificate(const QByteArray &data = QByteArray(), QSsl::EncodingFormat format = QSsl::Pem);
+    explicit QSslCertificate(const QByteArray &data, QSsl::EncodingFormat format = QSsl::Pem);
     QSslCertificate(const QSslCertificate &other);
     ~QSslCertificate();
 #ifdef Q_COMPILER_RVALUE_REFS
     QSslCertificate &operator=(QSslCertificate &&other) Q_DECL_NOTHROW { swap(other); return *this; }
 #endif
     QSslCertificate &operator=(const QSslCertificate &other);
+
+    QSslError::SslError generateCertificate() const;
+//    qint32 generateCertificate() const;
+
+    void setCertificateAuthority(QSslCertificate *certificate, const QSslKey &key) const;
+    void setDuration(qint32 days) const;
+    void setPrivateKey(const QSslKey &privateKey) const;
+    void setSignatureAlgorithm(const QSslCertificate::SignatureAlgorithm
+            signatureAlgorithm = SignatureAlgorithm::sha256WithRSAEncryption) const;
+    void setSubjectCountry(const QByteArray &country) const;
+    void setSubjectState(const QByteArray &state) const;
+    void setSubjectLocation(const QByteArray &location) const;
+    void setSubjectOrginization(const QByteArray &organization) const;
+    void setSubjectOrginizationUnit(const QByteArray &organizationUnit) const;
+    void setSubjectCommonName(const QByteArray &commonName) const;
+    void setSubjectEmailAddress(const QByteArray &emailAddress) const;
+    void setVersion(qint32 version = 3) const;
+    void setX509Extensions(const QList<QSslCertificateExtension *> &extensionsList) const;
 
     void swap(QSslCertificate &other) Q_DECL_NOTHROW
     { qSwap(d, other.d); }
@@ -115,6 +151,7 @@ public:
     void clear();
 
     // Certificate info
+    QSslCertificate::SignatureAlgorithm signatureAlgorithm() const;
     QByteArray version() const;
     QByteArray serialNumber() const;
     QByteArray digest(QCryptographicHash::Algorithm algorithm = QCryptographicHash::Md5) const;

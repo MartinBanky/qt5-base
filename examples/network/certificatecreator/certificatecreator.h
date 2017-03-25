@@ -1,9 +1,9 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2017 Martin Banky <martin.banky@gmail.com>
 ** Contact: https://www.qt.io/licensing/
 **
-** This file is part of the documentation of the Qt Toolkit.
+** This file is part of the examples of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** Commercial License Usage
@@ -48,30 +48,42 @@
 **
 ****************************************************************************/
 
-//! [0]
-const auto certs = QSslCertificate::fromPath("C:/ssl/certificate.*.pem",
-                                             QSsl::Pem, QRegExp::Wildcard);
-for (const QSslCertificate &cert : certs) {
-    qDebug() << cert.issuerInfo(QSslCertificate::Organization);
-}
-//! [0]
+#ifndef CERTIFICATECREATOR_H
+#define CERTIFICATECREATOR_H
 
-//! [1]
-#define SN_authority_key_identifier             "authorityKeyIdentifier"
-#define LN_authority_key_identifier             "X509v3 Authority Key Identifier"
-#define NID_authority_key_identifier            90
-#define OBJ_authority_key_identifier            OBJ_id_ce,35L
-//! [1]
+#include <QObject>
+#include <QSslKey>
+#include <QSslCertificate>
 
-//! [2]
-    QSslCertificateExtension extension;
-    extension.setNid(90);
-    extension.setNidValue("keyid,issuer")
-//! [2]
+class QSslCertificateExtension;
 
-//! [3]
-X509v3 Authority Key Identifier:
-    keyid:16:D9:2F:E7:6E:09:3F:FF:46:0F:58:4B:30:34:7A:5D:0A:24:DC:9E
-    DirName:/C=US/ST=Arizona/L=Tucson/O=SSL Test Server/OU=SSL Test Server Certificate Authority/CN=SSL Test Server Root CA/emailAddress=admin@ssltestserver.org
-    serial:10:00
-//! [3]
+class CertificateCreator : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit CertificateCreator(QObject *parent = 0);
+    virtual ~CertificateCreator();
+
+    void createChainCertificate(const QSslCertificate rootCertificate,
+        const QSslCertificate intermediateCertificate, const QString fileName) const;
+    void encryptKey(QSslKey *sslKey, const QString fileName, const QByteArray passphrase = QByteArray()) const;
+    void saveCertificate(const QSslCertificate &certificate, const QString fileName) const;
+
+    QSslCertificate *createCertificate(qint32 days, const QSslKey &privateKey,
+            const QSslCertificate::SignatureAlgorithm signatureAlgorithm,
+            const QByteArray &country, const QByteArray &state, const QByteArray &location,
+            const QByteArray &organization, const QByteArray &organizationUnit,
+            const QByteArray &commonName, const QByteArray &emailAddress,
+            QList<QSslCertificateExtension *> &extensionsList, bool selfSign = false,
+            QSslCertificate *caCertificate = new QSslCertificate(),
+            const QSslKey &caKey = QSslKey()) const;
+    QSslCertificateExtension *createExtension(qint32 nid, const QByteArray nidValue) const;
+    QSslKey *createPrivateKey(qint32 bitSize) const;
+
+private:
+    CertificateCreator(const CertificateCreator&);
+    CertificateCreator& operator=(const CertificateCreator&);
+};
+
+#endif // CERTIFICATECREATOR_H
