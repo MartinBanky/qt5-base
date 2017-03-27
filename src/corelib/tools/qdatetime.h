@@ -302,6 +302,8 @@ public:
     QDateTime addYears(int years) const Q_REQUIRED_RESULT;
     QDateTime addSecs(qint64 secs) const Q_REQUIRED_RESULT;
     QDateTime addMSecs(qint64 msecs) const Q_REQUIRED_RESULT;
+    QDateTime addMinutes(qint64 nminutes) const Q_REQUIRED_RESULT;
+    QDateTime addHours(qint64 nhours) const Q_REQUIRED_RESULT;
 
     QDateTime toTimeSpec(Qt::TimeSpec spec) const;
     inline QDateTime toLocalTime() const { return toTimeSpec(Qt::LocalTime); }

@@ -4038,6 +4038,34 @@ QDateTime QDateTime::addYears(int nyears) const
 }
 
 /*!
+    Returns a QDateTime object containing a datetime \a nminutes
+    minutes later than the datetime of this object (or earlier if
+    \a nminutes is negative).
+
+    If this datetime is invalid, an invalid datetime will be returned.
+
+    \sa addMSecs(), addSecs(), addHours(), addDays(), addMonths(), addYears()
+*/
+QDateTime QDateTime::addMinutes(qint64 nminutes) const
+{
+    return addSecs(nminutes * 60);
+}
+
+/*!
+    Returns a QDateTime object containing a datetime \a nhours
+    hours later than the datetime of this object (or earlier if
+    \a nhours is negative).
+
+    If this datetime is invalid, an invalid datetime will be returned.
+
+    \sa addMSecs(), addSecs(), addMinutes(), addDays(), addMonths(), addYears()
+*/
+QDateTime QDateTime::addHours(qint64 nhours) const
+{
+    return addMinutes(nhours * 60);
+}
+
+/*!
     Returns a QDateTime object containing a datetime \a s seconds
     later than the datetime of this object (or earlier if \a s is
     negative).
