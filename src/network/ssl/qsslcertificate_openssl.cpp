@@ -418,8 +418,8 @@ static QVariant x509ExtensionToValue(X509_EXTENSION *ext)
                 GENERAL_NAMES *gens = auth_key->issuer;
                 GENERAL_NAME *gen;
 
-                for (int i=0; i < sk_GENERAL_NAME_num(gens); ++i) {
-                    gen = sk_GENERAL_NAME_value(gens, i);
+                for (int i=0; i < q_sk_GENERAL_NAME_num(gens); ++i) {
+                    gen = q_sk_GENERAL_NAME_value(gens, i);
 
                     if (gen->type == GEN_DIRNAME) {
                         X509_NAME *name = gen->d.directoryName;
@@ -428,16 +428,16 @@ static QVariant x509ExtensionToValue(X509_EXTENSION *ext)
                         QString stringData;
                         QByteArray nameEntry;
 
-                        for (int i = 0; i < X509_NAME_entry_count(name); ++i) {
-                            X509_NAME_ENTRY *e = X509_NAME_get_entry(name, i);
+                        for (int i = 0; i < q_X509_NAME_entry_count(name); ++i) {
+                            X509_NAME_ENTRY *e = q_X509_NAME_get_entry(name, i);
 
-                            nameEntry = QSslCertificatePrivate::asn1ObjectName(X509_NAME_ENTRY_get_object(e));
+                            nameEntry = QSslCertificatePrivate::asn1ObjectName(q_X509_NAME_ENTRY_get_object(e));
                             unsigned char *data = 0;
-                            int size = ASN1_STRING_to_UTF8(&data, X509_NAME_ENTRY_get_data(e));
+                            int size = q_ASN1_STRING_to_UTF8(&data, q_X509_NAME_ENTRY_get_data(e));
                             stringData = QString::fromUtf8((char*)data, size);
                             dirName.append('/' + nameEntry + '=' + stringData);
 
-                            CRYPTO_free(data);
+                            q_CRYPTO_free(data);
                         }
 
                         result[QLatin1String("DirName")] = dirName;
