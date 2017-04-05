@@ -234,7 +234,8 @@ QSslCertificate &QSslCertificate::operator=(const QSslCertificate &other)
     \fn QSslError::SslError QSslCertificate::generateCertificate() const
     Generates the new certificate. Call this after calling, at a
     minimum, setDuration(), setPrivateKey(), setSignatureAlgorithm(),
-    and setSubjectCommonName().
+    and setSubjectCommonName(). See \l certificatecreator example for
+    how to generate a certificate.
 
     \note You can only sign certificates with either RSA or DSA keys.
     Also, make sure you choose the right signature algorithm for the
