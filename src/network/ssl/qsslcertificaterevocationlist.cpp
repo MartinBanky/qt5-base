@@ -126,6 +126,8 @@
 
     \snippet code/src_network_ssl_qsslcertificaterevocationlist.cpp 5
 
+    See \l crlcreator example for how to work with CRLs.
+
     \sa QSslCertificate, QSslSocket, QSslKey, QSslCipher, QSslError
  */
 

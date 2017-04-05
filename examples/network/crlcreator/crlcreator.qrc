@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>addrevokedcerts/server0.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server1.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server2.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server3.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server4.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server5.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server6.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server7.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server8.ssltestserver.org.cert.pem</file>
+        <file>addrevokedcerts/server9.ssltestserver.org.cert.pem</file>
+        <file>certs/ca.cert.pem</file>
+        <file>certs/ca-chain.cert.pem</file>
+        <file>certs/intermediate.cert.pem</file>
+        <file>crl/intermediate.crl.add.pem</file>
+        <file>private/ca.key.pem</file>
+        <file>private/intermediate.key.pem</file>
+        <file>revokedcerts/server0.ssltestserver.org.cert.pem</file>
+        <file>revokedcerts/server1.ssltestserver.org.cert.pem</file>
+        <file>revokedcerts/server2.ssltestserver.org.cert.pem</file>
+        <file>revokedcerts/server3.ssltestserver.org.cert.pem</file>
+        <file>revokedcerts/server4.ssltestserver.org.cert.pem</file>
+    </qresource>
+</RCC>
