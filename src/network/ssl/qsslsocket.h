@@ -42,6 +42,8 @@
 #define QSSLSOCKET_H
 
 #include <QtNetwork/qtnetworkglobal.h>
+#include <QtNetwork/qsslkey.h>
+#include <QtNetwork/qssl.h>
 #include <QtCore/qlist.h>
 #include <QtCore/qregexp.h>
 #ifndef QT_NO_SSL

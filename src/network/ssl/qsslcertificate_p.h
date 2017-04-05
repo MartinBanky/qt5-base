@@ -57,6 +57,9 @@
 
 #include "qsslsocket_p.h"
 #include "qsslcertificateextension.h"
+#ifndef QT_NO_OPENSSL
+#include "qsslsocket_openssl_symbols_p.h"
+#endif
 #include <QtCore/qdatetime.h>
 #include <QtCore/qmap.h>
 
