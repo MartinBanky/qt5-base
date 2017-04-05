@@ -83,12 +83,22 @@ QT_BEGIN_NAMESPACE
 class QSslCertificatePrivate
 {
 public:
-    QSslCertificatePrivate()
-        : null(true), x509(0)
-    {
-        QSslSocketPrivate::ensureInitialized();
-    }
+    enum SignatureAlgorithmNid {
+        md2WithRSAEncryptionNid = 7,
+        md4WithRSAEncryptionNid = 396,
+        md5WithRSAEncryptionNid = 8,
+        shaWithRSAEncryptionNid = 42,
+        sha1WithRSAEncryptionNid = 65,
+        dsaWithSHA1Nid = 113,
+        sha224WithRSAEncryptionNid = 671,
+        sha256WithRSAEncryptionNid = 668,
+        sha384WithRSAEncryptionNid = 669,
+        sha512WithRSAEncryptionNid = 670,
+        mdc2WithRSANid = 96,
+        ripemd160WithRSANid = 119,
+    };
 
+    QSslCertificatePrivate();
     ~QSslCertificatePrivate()
     {
 #ifndef QT_NO_OPENSSL
@@ -106,7 +116,29 @@ public:
     QDateTime notValidAfter;
     QDateTime notValidBefore;
 
-#ifdef QT_NO_OPENSSL
+    qint32 version;
+    QSslKey privateKey;
+    QByteArray country;
+    QByteArray state;
+    QByteArray location;
+    QByteArray organization;
+    QByteArray organizationUnit;
+    QByteArray commonName;
+    QByteArray emailAddress;
+    QByteArray distinguishedNameQualifier;
+    QByteArray subjectSerialNumber;
+    QByteArray sslError;
+    QVector<qint32> nidToSigAlgorithm;
+    QList<QSslCertificateExtension> extensionsList;
+    QSslCertificate *certificateAuthorityCertificate;
+    QSslKey certificateAuthorityKey;
+    QSsl::SignatureAlgorithm signatureAlgorithm;
+
+#ifndef QT_NO_OPENSSL
+    typedef const EVP_MD *(*DigestType)();
+
+    qint8 addExtension(X509 *signer, X509 *subject, qint32 nid, QByteArray value);
+#else
     bool subjectMatchesIssuer;
     QSsl::KeyAlgorithm publicKeyAlgorithm;
     QByteArray publicKeyDerData;
@@ -122,6 +154,7 @@ public:
 
     void init(const QByteArray &data, QSsl::EncodingFormat format);
 
+    static qint32 asn1ObjectNid(ASN1_OBJECT *object);
     static QByteArray asn1ObjectId(ASN1_OBJECT *object);
     static QByteArray asn1ObjectName(ASN1_OBJECT *object);
     static QByteArray QByteArray_from_X509(X509 *x509, QSsl::EncodingFormat format);
