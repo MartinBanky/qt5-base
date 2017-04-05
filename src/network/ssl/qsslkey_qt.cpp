@@ -120,17 +120,17 @@ static int numberOfBits(const QByteArray &modulus)
     return bits;
 }
 
-static QByteArray deriveKey(QSslKeyPrivate::Cipher cipher, const QByteArray &passPhrase, const QByteArray &iv)
+static QByteArray deriveKey(QSslKey::Cipher cipher, const QByteArray &passPhrase, const QByteArray &iv)
 {
     QByteArray key;
     QCryptographicHash hash(QCryptographicHash::Md5);
     hash.addData(passPhrase);
     hash.addData(iv);
     switch (cipher) {
-    case QSslKeyPrivate::DesCbc:
+    case QSslKey::DesCbc:
         key = hash.result().left(8);
         break;
-    case QSslKeyPrivate::DesEde3Cbc:
+    case QSslKey::DesEde3Cbc:
         key = hash.result();
         hash.reset();
         hash.addData(key);
@@ -138,7 +138,7 @@ static QByteArray deriveKey(QSslKeyPrivate::Cipher cipher, const QByteArray &pas
         hash.addData(iv);
         key += hash.result().left(8);
         break;
-    case QSslKeyPrivate::Rc2Cbc:
+    case QSslKey::Rc2Cbc:
         key = hash.result();
         break;
     }
@@ -255,13 +255,13 @@ void QSslKeyPrivate::decodePem(const QByteArray &pem, const QByteArray &passPhra
             return;
         }
 
-        Cipher cipher;
+        QSslKey::Cipher cipher;
         if (dekInfo.first() == "DES-CBC") {
-            cipher = DesCbc;
+            cipher = QSslKey::DesCbc;
         } else if (dekInfo.first() == "DES-EDE3-CBC") {
-            cipher = DesEde3Cbc;
+            cipher = QSslKey::DesEde3Cbc;
         } else if (dekInfo.first() == "RC2-CBC") {
-            cipher = Rc2Cbc;
+            cipher = QSslKey::Rc2Cbc;
         } else {
             clear(deepClear);
             return;
@@ -291,7 +291,7 @@ QByteArray QSslKeyPrivate::toPem(const QByteArray &passPhrase) const
         for (int i = 0; i < iv.size(); ++i)
             iv[i] = (qrand() & 0xff);
 
-        Cipher cipher = DesEde3Cbc;
+        QSslKey::Cipher cipher = QSslKey::DesEde3Cbc;
         const QByteArray key = deriveKey(cipher, passPhrase, iv);
         data = encrypt(cipher, derData, key, iv);
 

@@ -54,6 +54,113 @@
     \sa QSslSocket, QSslCertificate, QSslCipher
 */
 
+/*!
+    \enum QSslKey::Cipher
+
+    Describes the ciphers that can be passed to setCipher()
+    for use when encrypting keys.
+
+    \value DesEcb DES-ECB DES in ECB mode
+    \value DesEde DES-EDE Two key triple DES EDE in ECB mode
+    \value DesEde3 DES-EDE3 Three key triple DES EDE in ECB mode
+    \value DesEdeEcb DES-EDE-ECB
+    \value DesEde3Ecb DES-EDE3-ECB
+    \value DesCfb64 DES-CFB64
+    \value DesCfb1 DES-CFB1
+    \value DesCfb8 DES-CFB8
+    \value DesEdeCfb64 DES-EDE-CFB64 Two key triple DES EDE in CFB64 mode
+    \value DesEde3Cfb64 DES-EDE3-CFB64 Three key triple DES EDE CFB64 mode
+    \value DesEde3Cfb1 DES-EDE3-CFB1
+    \value DesEde3Cfb8 DES-EDE3-CFB8
+    \value DesOfb DES-OFB DES in OFB mode
+    \value DesEdeOfb DES-EDE-OFB
+    \value DesEde3Ofb DES-EDE3-OFB Three key triple DES EDE in OFB mode
+    \value DesCbc DES-CBC DES in CBC mode
+    \value DesEdeCbc DES-EDE-CBC
+    \value DesEde3Cbc DES-EDE3-CBC Three key triple DES EDE in CBC mode
+    \value DesxCbc DES-XCBC
+    \value Rc4 RC4 128 bit RC4
+    \value Rc4_40 RC4-40 40 bit RC4
+    \value Rc4HmacMd5 RC4-HMAC-MD5
+    \value IdeaEcb IDEA-ECB IDEA in ECB mode
+    \value IdeaCfb64 IDEA-CFB64 IDEA in CFB64 mode
+    \value IdeaOfb IDEA-OFB IDEA in OFB mode
+    \value IdeaCbc IDEA-CBC IDEA algorithm in CBC mode
+    \value Rc2Ecb RC2-ECB 128 bit RC2 in ECB mode
+    \value Rc2Cbc RC2-CBC 128 bit RC2 in CBC mode
+    \value Rc2_40Cbc RC2-40-CBC 40 bit RC2 in CBC mode
+    \value Rc2_64Cbc RC2-64-CBC 64 bit RC2 in CBC mode
+    \value Rc2Cfb64 RC2-CFB64 128 bit RC2 in CFB64 mode
+    \value Rc2Ofb RC2-OFB 128 bit RC2 in OFB mode
+    \value BfEcb BF-ECB Blowfish in ECB mode
+    \value BfCbc BF-CBC Blowfish in CBC mode
+    \value BfCfb64 BF-CFB64 Blowfish in CFB64 mode
+    \value BfOfb BF-OFB Blowfish in OFB mode
+    \value Cast5Ecb CAST5-ECB CAST5 in ECB mode
+    \value Cast5Cbc CAST5-CBC CAST5 in CBC mode
+    \value Cast5Cfb64 CAST5-CFB64 CAST5 in CFB64 mode
+    \value Cast5Ofb CAST5-OFB CAST5 in OFB mode
+    \value Rc5Cbc RC5-CBC RC5 cipher in CBC mode
+    \value Rc5Ecb RC5-ECB RC5 cipher in ECB mode
+    \value Rc5Cfb64 RC5-CFB64 RC5 cipher in CBC64 mode
+    \value Rc5Ofb RC5-OFB RC5 cipher in OFB mode
+    \value Aes128Ecb AES-128-ECB 128 bit AES in ECB mode
+    \value Aes128Cbc AES-128-CBC 128 bit AES in CBC mode
+    \value Aes128Cfb1 AES-128-CFB1 128 bit AES in 1 bit CFB mode
+    \value Aes128Cfb8 AES-128-CFB8 128 bit AES in 8 bit CFB mode
+    \value Aes128Cfb128 AES-128-CFB128 128 AES in 128 bit CFB mode
+    \value Aes128Ofb AES-128-OFB 128 bit AES in OFB mode
+    \value Aes128Ctr AES-128-CTR 128 bit AES in CTR mode
+    \value Aes128Ccm AES-128-CCM 128 bit AES in CCM mode
+    \value Aes128Gcm AES-128-GCM 128 bit AES in GCM mode
+    \value Aes128Xts AES-128-XTS 128 bit AES in XTS mode
+    \value Aes192Ecb AES-192-ECB 192 bit AES in ECB mode
+    \value Aes192Cbc AES-192-CBC 192 bit AES in CBC mode
+    \value Aes192Cfb1 AES-192-CFB1 192 bit AES in 1 bit CFB mode
+    \value Aes192Cfb8 AES-192-CFB8 192 bit AES in 8 bit CFB mode
+    \value Aes192Cfb128 AES-192-CFB128 192 bit AES in 128 bit CFB mode
+    \value Aes192Ofb AES-192-OFB 192 bit AES in OFB mode
+    \value Aes192Ctr AES-192-CTR 192 bit AES in CTR mode
+    \value Aes192Ccm AES-192-CCM 192 bit AES in CCM mode
+    \value Aes192Gcm AES-192-GCM 192 bit AES in GCM mode
+    \value Aes256Ecb AES-256-ECB 256 bit AES in ECB mode
+    \value Aes256Cbc AES-256-CBC 256 bit AES in CBC mode
+    \value Aes256Cfb1 AES-256-CFB1 256 bit AES in 1 bit CFB mode
+    \value Aes256Cfb8 AES-256-CFB8 256 bit AES in 8 bit CFB mode
+    \value Aes256Cfb128 AES-256-CFB128 256 bit AES in 128 bit CFB mode
+    \value Aes256Ofb AES-256-OFB 256 bit AES in OFB mode
+    \value Aes256Ctr AES-256-CTR 256 bit AES in CTR mode
+    \value Aes256Ccm AES-256-CCM 256 bit AES in CCM mode
+    \value Aes256Gcm AES-256-GCM 256 bit AES in GCM mode
+    \value Aes256Xts AES-256-XTS 256 bit AES in XTS mode
+    \value Aes128CbcHmacSha1 AES-128-CBC-HMAC-SHA1
+    \value Aes256CbcHmacSha1 AES-256-CBC-HMAC-SHA1
+    \value Aes128CbcHmacSha256 AES-128-CBC-HMAC-SHA256
+    \value Aes256CbcHmacSha256 AES-256-CBC-HMAC-SHA256
+    \value Camellia128Ecb Camellia-128-ECB
+    \value Camellia128Cbc Camellia-128-CBC
+    \value Camellia128Cfb1 Camellia-128-CFB1
+    \value Camellia128Cfb8 Camellia-128-CFB8
+    \value Camellia128Cfb128 Camellia-128-CFB128
+    \value Camellia128Ofb Camellia-128-OFB
+    \value Camellia192Ecb Camellia-192-ECB
+    \value Camellia192Cbc Camellia-192-CBC
+    \value Camellia192Cfb1 Camellia-192-CFB1
+    \value Camellia192Cfb8 Camellia-192-CFB8
+    \value Camellia192Cfb128 Camellia-192-CFB128
+    \value Camellia192Ofb Camellia-192-OFB
+    \value Camellia256Ecb Camellia-256-ECB
+    \value Camellia256Cbc Camellia-256-CBC
+    \value Camellia256Cfb1 Camellia-256-CFB1
+    \value Camellia256Cfb8 Camellia-256-CFB8
+    \value Camellia256Cfb128 Camellia-256-CFB128
+    \value Camellia256Ofb Camellia-256-OFB
+    \value SeedEcb SEED-ECB
+    \value SeedCbc SEED-CBC
+    \value SeedCfb128 SEED-CFB128
+    \value SeedOfb SEED-OFB
+*/
+
 #include "qsslkey.h"
 #include "qsslkey_p.h"
 #ifndef QT_NO_OPENSSL
@@ -246,6 +353,8 @@ QSslKey::QSslKey(const QByteArray &encoded, QSsl::KeyAlgorithm algorithm,
         d->decodeDer(encoded);
     else
         d->decodePem(encoded, passPhrase);
+
+    d->bitSize = d->length();
 }
 
 /*!
@@ -272,6 +381,8 @@ QSslKey::QSslKey(QIODevice *device, QSsl::KeyAlgorithm algorithm, QSsl::Encoding
         d->decodeDer(encoded);
     else
         d->decodePem(encoded, passPhrase);
+
+    d->bitSize = d->length();
 }
 
 /*!
@@ -288,7 +399,7 @@ QSslKey::QSslKey(Qt::HANDLE handle, QSsl::KeyType type)
 #ifndef QT_NO_OPENSSL
     EVP_PKEY *evpKey = reinterpret_cast<EVP_PKEY *>(handle);
     if (!evpKey || !d->fromEVP_PKEY(evpKey)) {
-        d->opaque = evpKey;
+        d->pKey = evpKey;
         d->algorithm = QSsl::Opaque;
     } else {
         q_EVP_PKEY_free(evpKey);
@@ -298,7 +409,7 @@ QSslKey::QSslKey(Qt::HANDLE handle, QSsl::KeyType type)
     d->algorithm = QSsl::Opaque;
 #endif
     d->type = type;
-    d->isNull = !d->opaque;
+    d->isNull = !d->pKey;
 }
 
 /*!
@@ -325,6 +436,46 @@ QSslKey &QSslKey::operator=(const QSslKey &other)
 {
     d = other.d;
     return *this;
+}
+
+/*!
+    Generates the new private key. You can call this without calling
+    any of the setter functions. All variables involved have default
+    values set. Only RSA or DSA keys are supported. To encrypt the key,
+    call toPem() with a passphrase.
+ */
+void QSslKey::generatePrivateKey() const
+{
+    return d->generatePrivateKey();
+}
+
+/*!
+    Sets the algorithm for the key.
+ */
+void QSslKey::setAlgorithm(const QSsl::KeyAlgorithm algorithm) const
+{
+    d->algorithm = algorithm;
+}
+
+/*!
+    Sets the bit size for the key.
+ */
+void QSslKey::setBitSize(qint32 bitSize) const
+{
+    if (d->algorithm == QSsl::Dsa && bitSize > 1024) {
+        d->bitSize = 1024;
+    } else {
+        d->bitSize = bitSize;
+    }
+}
+
+/*!
+    Sets the encryption cipher.
+    \note The passphrase has to be set as well.
+ */
+void QSslKey::setCipher(QSslKey::Cipher cipher) const
+{
+    d->cipher = cipher;
 }
 
 /*!
@@ -405,7 +556,8 @@ QByteArray QSslKey::toDer(const QByteArray &passPhrase) const
 /*!
   Returns the key in PEM encoding. The result is encrypted with
   \a passPhrase if the key is a private key and \a passPhrase is
-  non-empty.
+  non-empty. If the chosen cipher is unavailable, then the message
+  \a Cipher \a is \a unavailable will be returned.
 */
 QByteArray QSslKey::toPem(const QByteArray &passPhrase) const
 {
