@@ -100,6 +100,8 @@ QByteArray QSslCertificate::serialNumber() const
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
     if (d->serialNumberString.isEmpty() && d->x509) {
         ASN1_INTEGER *serialNumber = d->x509->cert_info->serialNumber;
+        d->serialNumberHex = QByteArray(reinterpret_cast<const char *>(serialNumber->data),
+                serialNumber->length).toHex().toUpper();
         QByteArray hexString;
         hexString.reserve(serialNumber->length * 3);
         for (int a = 0; a < serialNumber->length; ++a) {
@@ -424,6 +426,14 @@ static QVariant x509ExtensionToValue(X509_EXTENSION *ext)
             return result;
         }
         break;
+    case NID_crl_number:
+        {
+            void *extInternal = q_X509V3_EXT_d2i(ext);
+            const X509V3_EXT_METHOD *method = q_X509V3_EXT_get(ext);
+            QVariant result(QString::fromUtf8(method->i2s(method, extInternal)));
+
+            return result;
+        }
     }
 
     return QVariant();
@@ -625,6 +635,10 @@ QSslCertificate QSslCertificatePrivate::QSslCertificate_from_X509(X509 *x509)
     certificate.d->notValidAfter = q_getTimeFromASN1(naft);
     certificate.d->null = false;
     certificate.d->x509 = q_X509_dup(x509);
+
+    ASN1_INTEGER *serialNumber = certificate.d->x509->cert_info->serialNumber;
+    certificate.d->serialNumberHex = QByteArray(reinterpret_cast<const char *>(serialNumber->data),
+            serialNumber->length).toHex().toUpper();
 
     return certificate;
 }

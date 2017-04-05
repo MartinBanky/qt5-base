@@ -99,6 +99,7 @@ public:
 
     bool null;
     QByteArray versionString;
+    QByteArray serialNumberHex;
     QByteArray serialNumberString;
 
     QMap<QByteArray, QString> issuerInfo;
@@ -134,6 +135,8 @@ public:
     static QByteArray subjectInfoToString(QSslCertificate::SubjectInfo info);
 
     friend class QSslSocketBackendPrivate;
+    friend class QSslCertificateRevocationList;
+    friend class QSslCertificateRevocationListPrivate;
 
     QAtomicInt ref;
 

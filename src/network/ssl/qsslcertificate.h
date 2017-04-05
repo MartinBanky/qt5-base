@@ -163,6 +163,8 @@ private:
     QExplicitlySharedDataPointer<QSslCertificatePrivate> d;
     friend class QSslCertificatePrivate;
     friend class QSslSocketBackendPrivate;
+    friend class QSslCertificateRevocationList;
+    friend class QSslCertificateRevocationListPrivate;
 
     friend Q_NETWORK_EXPORT uint qHash(const QSslCertificate &key, uint seed) Q_DECL_NOTHROW;
 };

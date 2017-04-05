@@ -206,6 +206,8 @@ private:
     QExplicitlySharedDataPointer<QSslKeyPrivate> d;
     friend class QSslCertificate;
     friend class QSslSocketBackendPrivate;
+    friend class QSslCertificateRevocationList;
+    friend class QSslCertificateRevocationListPrivate;
 };
 
 Q_DECLARE_SHARED(QSslKey)

@@ -6,7 +6,7 @@ qtConfig(ssl) {
                ssl/qsslcertificate.h \
                ssl/qsslcertificate_p.h \
                ssl/qsslconfiguration.h \
-	       ssl/qsslconfiguration_p.h \
+               ssl/qsslconfiguration_p.h \
                ssl/qsslcipher.h \
                ssl/qsslcipher_p.h \
                ssl/qssldiffiehellmanparameters.h \
@@ -20,7 +20,11 @@ qtConfig(ssl) {
                ssl/qsslpresharedkeyauthenticator.h \
                ssl/qsslpresharedkeyauthenticator_p.h \
                ssl/qsslcertificateextension.h \
-               ssl/qsslcertificateextension_p.h
+               ssl/qsslcertificateextension_p.h \
+               ssl/qsslcertificaterevocationlist.h \
+               ssl/qsslcertificaterevocationlist_p.h \
+               ssl/qsslrevokedcertificate.h \
+               ssl/qsslrevokedcertificate_p.h
     SOURCES += ssl/qasn1element.cpp \
                ssl/qssl.cpp \
                ssl/qsslcertificate.cpp \
@@ -32,7 +36,9 @@ qtConfig(ssl) {
                ssl/qsslerror.cpp \
                ssl/qsslsocket.cpp \
                ssl/qsslpresharedkeyauthenticator.cpp \
-               ssl/qsslcertificateextension.cpp
+               ssl/qsslcertificateextension.cpp \
+               ssl/qsslcertificaterevocationlist.cpp \
+               ssl/qsslrevokedcertificate.cpp
 
     winrt {
         HEADERS += ssl/qsslsocket_winrt_p.h
@@ -66,7 +72,8 @@ qtConfig(ssl) {
                    ssl/qsslellipticcurve_openssl.cpp \
                    ssl/qsslkey_openssl.cpp \
                    ssl/qsslsocket_openssl.cpp \
-                   ssl/qsslsocket_openssl_symbols.cpp
+                   ssl/qsslsocket_openssl_symbols.cpp \
+                   ssl/qsslcertificaterevocationlist_openssl.cpp
 
         darwin:SOURCES += ssl/qsslsocket_mac_shared.cpp
 
