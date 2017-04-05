@@ -39,11 +39,15 @@
 
 #include "qssl_p.h"
 #include "qsslsocket_openssl_symbols_p.h"
+#include "qsslcertificate.h"
 #include "qsslcertificate_p.h"
 #include "qsslkey_p.h"
 #include "qsslcertificateextension_p.h"
 
 #include <QtCore/private/qmutexpool_p.h>
+#include <QtCore/quuid.h>
+
+#include <openssl/asn1.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -83,6 +87,30 @@ bool QSslCertificate::isSelfSigned() const
         return false;
 
     return (q_X509_check_issued(d->x509, d->x509) == X509_V_OK);
+}
+
+QSsl::SignatureAlgorithm QSslCertificate::signatureAlgorithm() const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    qint32 nid;
+    ASN1_OBJECT *aoid;
+
+    q_X509_ALGOR_get0(&aoid, 0, 0, d->x509->sig_alg);
+    nid = OBJ_obj2nid(aoid);
+
+    if (nid) {
+        for (quint8 i = 0; i < d->nidToSigAlgorithm.size(); ++i) {
+            if (nid == d->nidToSigAlgorithm.at(i)) {
+                d->signatureAlgorithm = static_cast<QSsl::SignatureAlgorithm>(i);
+                break;
+            }
+        }
+    }
+
+    q_ASN1_OBJECT_free(aoid);
+
+    return d->signatureAlgorithm;
 }
 
 QByteArray QSslCertificate::version() const
@@ -263,6 +291,345 @@ QSslKey QSslCertificate::publicKey() const
     return key;
 }
 
+QSslError::SslError QSslCertificate::generateCertificate() const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    if (!d->notValidBefore.isValid()) {
+        return QSslError::InvalidNotBeforeField;
+    }
+
+    if (!d->notValidAfter.isValid()) {
+        return QSslError::InvalidNotAfterField;
+    }
+
+    if (d->privateKey.isNull()) {
+        return QSslError::UnableToDecodeSubjectPrivateKey;
+    }
+
+    if (d->commonName.isEmpty()) {
+        return QSslError::CommonNameInvalid;
+    }
+
+    if (d->certificateAuthorityCertificate) {
+        if (!d->certificateAuthorityCertificate->isNull()) {
+            if (d->certificateAuthorityKey.isNull()) {
+                return QSslError::UnableToDecodeIssuerPrivateKey;
+            } else if (d->certificateAuthorityKey.d->algorithm == QSsl::Ec
+                          || d->certificateAuthorityKey.d->algorithm == QSsl::Opaque) {
+                return QSslError::InvalidSigningKey;
+            } else if (!q_X509_check_private_key(d->certificateAuthorityCertificate->d->x509,
+                    d->certificateAuthorityKey.d->pKey)) {
+                return QSslError::CaCertificateAndKeyDontMatch;
+            }
+        }
+    }
+
+    if (d->privateKey.d->algorithm == QSsl::Opaque
+            || d->privateKey.d->algorithm == QSsl::Ec) {
+        return QSslError::InvalidSigningKey;
+    }
+
+    if (!isNull()) {
+        q_X509_free(d->x509);
+        d->x509 = q_X509_new();
+    }
+
+    q_X509_set_version(d->x509, d->version);
+
+    QByteArray x509Name;
+
+    if (!d->country.isEmpty()) {
+        x509Name.append("/C=" + d->country);
+    }
+
+    if (!d->state.isEmpty()) {
+        x509Name.append("/ST=" + d->state);
+    }
+
+    if (!d->location.isEmpty()) {
+        x509Name.append("/L=" + d->location);
+    }
+
+    if (!d->organization.isEmpty()) {
+        x509Name.append("/O=" + d->organization);
+    }
+
+    if (!d->organizationUnit.isEmpty()) {
+        x509Name.append("/OU=" + d->organizationUnit);
+    }
+
+    if (!d->commonName.isEmpty()) {
+        x509Name.append("/CN=" + d->commonName);
+    }
+
+    if (!d->emailAddress.isEmpty()) {
+        x509Name.append("/emailAddress=" + d->emailAddress);
+    }
+
+    if (!d->distinguishedNameQualifier.isEmpty()) {
+        x509Name.append("/dnQualifier=" + d->distinguishedNameQualifier);
+    }
+
+    if (!d->subjectSerialNumber.isEmpty()) {
+        x509Name.append("/serialNumber=" + d->subjectSerialNumber);
+    }
+
+    d->x509->name = x509Name.data();
+
+    QByteArray serialAscii(QUuid::createUuid().toString().toLatin1());
+    serialAscii = serialAscii.mid(1, 8) +  serialAscii.mid(10, 4) +  serialAscii.mid(15, 4)
+            +  serialAscii.mid(20, 4) +  serialAscii.mid(25, 12);
+
+    BIGNUM *serialBigNumber = q_BN_new();
+    q_BN_hex2bn(&serialBigNumber, serialAscii.data());
+
+    ASN1_INTEGER *serialAsn1Integer = q_BN_to_ASN1_INTEGER(serialBigNumber, 0);
+    q_BN_free(serialBigNumber);
+
+    q_X509_set_serialNumber(d->x509, serialAsn1Integer);
+    q_ASN1_STRING_free(serialAsn1Integer);
+
+    X509_NAME *issuer = 0;
+
+    if (d->certificateAuthorityCertificate && !d->certificateAuthorityCertificate->isNull()) {
+        issuer = d->certificateAuthorityCertificate->d->x509->cert_info->subject;
+    } else {
+        issuer = d->x509->cert_info->subject;
+    }
+
+    q_X509_set_issuer_name(d->x509, issuer);
+    q_X509_set_pubkey(d->x509, d->privateKey.d->pKey);
+
+    QSslError::SslError errorStatus = QSslError::NoError;
+
+    for (quint8 i = 0; i < d->extensionsList.size(); ++i) {
+        if (d->certificateAuthorityCertificate && !d->certificateAuthorityCertificate->isNull()) {
+            if (!d->addExtension(d->certificateAuthorityCertificate->d->x509, d->x509,
+                    d->extensionsList.at(i).nid(), d->extensionsList.at(i).nidValue())) {
+                errorStatus = QSslError::ErrorAddingExtension;
+            }
+        } else {
+            if (!d->addExtension(d->x509, d->x509, d->extensionsList.at(i).nid(),
+                    d->extensionsList.at(i).nidValue())) {
+                errorStatus = QSslError::ErrorAddingExtension;
+            }
+        }
+    }
+
+    QSslCertificatePrivate::DigestType digestType[] = {
+        q_EVP_md2,
+        q_EVP_md4,
+        q_EVP_md5,
+        q_EVP_sha,
+        q_EVP_sha1,
+        q_EVP_dss1,
+        q_EVP_sha224,
+        q_EVP_sha256,
+        q_EVP_sha384,
+        q_EVP_sha512,
+        q_EVP_mdc2,
+        q_EVP_ripemd160
+    };
+
+    const EVP_MD *digest = digestType[d->signatureAlgorithm]();
+
+    if (!digest) {
+        return QSslError::SignatureAlgorithmUnavailable;
+    }
+
+    if (d->certificateAuthorityCertificate && !d->certificateAuthorityCertificate->isNull()) {
+        q_X509_sign(d->x509, d->certificateAuthorityKey.d->pKey, digest);
+    } else {
+        q_X509_sign(d->x509, d->privateKey.d->pKey, digest);
+    }
+
+    d->null = false;
+
+    return errorStatus;
+}
+
+/*!
+    \internal
+ */
+qint8 QSslCertificatePrivate::addExtension(X509 *signer, X509 *subject, qint32 nid, QByteArray value)
+{
+    X509_EXTENSION *extension;
+    X509V3_CTX ctx;
+
+    ctx.db = 0;
+
+    q_X509V3_set_ctx(&ctx, signer, subject, 0, 0, 0);
+    extension = q_X509V3_EXT_conf_nid(0, &ctx, nid, value.data());
+
+    if (extension) {
+        q_X509_add_ext(subject, extension, -1);
+        q_X509_EXTENSION_free(extension);
+
+        return 1;
+    } else {
+        quint32 errorCode = q_ERR_get_error();
+        const char *errorMsg;
+
+        while (errorCode) {
+            errorMsg = q_ERR_error_string(errorCode, 0);
+
+            sslError.append(errorMsg);
+            sslError.append('\n');
+
+            errorCode = q_ERR_get_error();
+        }
+
+        qCWarning(lcSsl, "QSslCertificatePrivate::addExtension: Error adding extension.\n%s", sslError.data());
+
+        return 0;
+    }
+}
+
+void QSslCertificate::setCertificateAuthority(QSslCertificate *certificate, const QSslKey &key) const
+{
+    if (d->certificateAuthorityCertificate) {
+        delete d->certificateAuthorityCertificate;
+    }
+
+    d->certificateAuthorityCertificate = certificate;
+    d->certificateAuthorityKey = key;
+}
+
+void QSslCertificate::setDuration(qint32 days) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->notValidBefore = QDateTime::currentDateTime();
+    d->notValidAfter = d->notValidBefore.addDays(days);
+
+    q_X509_gmtime_adj(d->x509->cert_info->validity->notBefore, 0);
+    q_X509_gmtime_adj(d->x509->cert_info->validity->notAfter, days * 86400LL);
+}
+
+void QSslCertificate::setPrivateKey(const QSslKey &privateKey) const
+{
+    d->privateKey = privateKey;
+}
+
+void QSslCertificate::setSignatureAlgorithm(const QSsl::SignatureAlgorithm signatureAlgorithm) const
+{
+    d->signatureAlgorithm = signatureAlgorithm;
+}
+
+void QSslCertificate::setSubjectCountry(const QByteArray &country) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->country = country;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(country.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectState(const QByteArray &state) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->state = state;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "ST", MBSTRING_ASC,
+        reinterpret_cast<const unsigned char *>(state.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectLocation(const QByteArray &location) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->location = location;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "L", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(location.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectOrginization(const QByteArray &organization) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->organization = organization;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "O", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(organization.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectOrginizationUnit(const QByteArray &organizationUnit) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->organizationUnit = organizationUnit;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "OU", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(organizationUnit.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectCommonName(const QByteArray &commonName) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->commonName = commonName;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(commonName.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectEmailAddress(const QByteArray &emailAddress) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->emailAddress = emailAddress;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "emailAddress", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(emailAddress.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectDistinguishedNameQualifier(const QByteArray &distinguishedNameQualifier) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->distinguishedNameQualifier = distinguishedNameQualifier;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "dnQualifier", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(distinguishedNameQualifier.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setSubjectSerialNumber(const QByteArray &subjectSerialNumber) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->subjectSerialNumber = subjectSerialNumber;
+
+    X509_NAME *name = d->x509->cert_info->subject;
+    q_X509_NAME_add_entry_by_txt(name, "serialNumber", MBSTRING_ASC,
+            reinterpret_cast<const unsigned char *>(subjectSerialNumber.data()), -1, -1, 0);
+}
+
+void QSslCertificate::setVersion(qint32 version) const
+{
+    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+
+    d->version = version - 1;
+    d->versionString = QByteArray::number(version);
+}
+
+void QSslCertificate::setX509Extensions(const QList<QSslCertificateExtension> &extensionsList) const
+{
+    Q_UNUSED(extensionsList);
+    d->extensionsList = extensionsList;
+}
+
 /*
  * Convert unknown extensions to a QVariant.
  */
@@ -439,6 +806,7 @@ QSslCertificateExtension QSslCertificatePrivate::convertExtension(X509_EXTENSION
 
     result.d->oid = QString::fromUtf8(oid);
     result.d->name = QString::fromUtf8(name);
+    result.d->nid = QSslCertificatePrivate::asn1ObjectNid(obj);
 
     bool critical = q_X509_EXTENSION_get_critical(ext);
     result.d->critical = critical;
@@ -577,6 +945,14 @@ QString QSslCertificatePrivate::text_from_X509(X509 *x509)
     q_BIO_free(bio);
 
     return QString::fromLatin1(result);
+}
+
+/*!
+    \internal
+*/
+qint32 QSslCertificatePrivate::asn1ObjectNid(ASN1_OBJECT *object)
+{
+    return q_OBJ_obj2nid(object);
 }
 
 QByteArray QSslCertificatePrivate::asn1ObjectId(ASN1_OBJECT *object)
