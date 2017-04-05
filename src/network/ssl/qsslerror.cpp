@@ -63,6 +63,7 @@
     \value NoError
     \value UnableToGetIssuerCertificate
     \value UnableToDecryptCertificateSignature
+    \value UnableToDecodeIssuerPrivateKey
     \value UnableToDecodeIssuerPublicKey
     \value CertificateSignatureFailed
     \value CertificateNotYetValid
@@ -83,9 +84,21 @@
     \value AuthorityIssuerSerialNumberMismatch
     \value NoPeerCertificate
     \value HostNameMismatch
-    \value UnspecifiedError
     \value NoSslSupport
     \value CertificateBlacklisted
+    \value UnableToDecodeSubjectPrivateKey
+    \value CommonNameInvalid
+    \value SignatureAlgorithmUnavailable
+    \value InvalidSigningKey
+    \value CaCertificateAndKeyDontMatch
+    \value ErrorAddingExtension
+    \value InvalidLastUpdateField,
+    \value InvalidNextUpdateField,
+    \value UnableToGetRevocationList,
+    \value CrlNumberInvalid
+    \value InvalidCrlVersion
+    \value InvalidDateTime
+    \value UnspecifiedError
 
     \sa QSslError::errorString()
 */
@@ -95,6 +108,8 @@
 #ifndef QT_NO_DEBUG_STREAM
 #include <QtCore/qdebug.h>
 #endif
+
+#include <QtNetwork/qsslcertificate.h>
 
 QT_BEGIN_NAMESPACE
 

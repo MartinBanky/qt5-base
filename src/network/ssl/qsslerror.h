@@ -43,12 +43,13 @@
 
 #include <QtNetwork/qtnetworkglobal.h>
 #include <QtCore/qvariant.h>
-#include <QtNetwork/qsslcertificate.h>
 
 QT_BEGIN_NAMESPACE
 
 
 #ifndef QT_NO_SSL
+
+class QSslCertificate;
 
 class QSslErrorPrivate;
 class Q_NETWORK_EXPORT QSslError
@@ -58,6 +59,7 @@ public:
         NoError,
         UnableToGetIssuerCertificate,
         UnableToDecryptCertificateSignature,
+        UnableToDecodeIssuerPrivateKey,
         UnableToDecodeIssuerPublicKey,
         CertificateSignatureFailed,
         CertificateNotYetValid,
@@ -80,6 +82,18 @@ public:
         HostNameMismatch,
         NoSslSupport,
         CertificateBlacklisted,
+        UnableToDecodeSubjectPrivateKey,
+        CommonNameInvalid,
+        SignatureAlgorithmUnavailable,
+        InvalidSigningKey,
+        CaCertificateAndKeyDontMatch,
+        ErrorAddingExtension,
+        InvalidLastUpdateField,
+        InvalidNextUpdateField,
+        UnableToGetRevocationList,
+        CrlNumberInvalid,
+        InvalidCrlVersion,
+        InvalidDateTime,
         UnspecifiedError = -1
     };
 
