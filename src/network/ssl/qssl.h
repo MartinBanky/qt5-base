@@ -65,6 +65,21 @@ namespace QSsl {
         Ec
     };
 
+    enum SignatureAlgorithm {
+        md2WithRSAEncryption,
+        md4WithRSAEncryption,
+        md5WithRSAEncryption,
+        shaWithRSAEncryption,
+        sha1WithRSAEncryption,
+        dsaWithSHA1,
+        sha224WithRSAEncryption,
+        sha256WithRSAEncryption,
+        sha384WithRSAEncryption,
+        sha512WithRSAEncryption,
+        mdc2WithRSA,
+        ripemd160WithRSA,
+    };
+
     enum AlternativeNameEntryType {
         EmailEntry,
         DnsEntry

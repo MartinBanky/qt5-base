@@ -189,5 +189,26 @@ Q_LOGGING_CATEGORY(lcSsl, "qt.network.ssl");
     backend in use.
 */
 
+/*!
+    \enum QSsl::SignatureAlgorithm
+
+    Describes the signature algorithms that are used by certificates.
+    The signature algorithm is the algorithm used by the certificate
+    signer to sign the certificate, whether from a Certificate
+    Authority or self-signed.
+
+    \value md2WithRSAEncryption The Signature Algorithm is md2WithRSAEncryption.
+    \value md4WithRSAEncryption The Signature Algorithm is md4WithRSAEncryption.
+    \value md5WithRSAEncryption The Signature Algorithm is md5WithRSAEncryption.
+    \value shaWithRSAEncryption The Signature Algorithm is shaWithRSAEncryption.
+    \value sha1WithRSAEncryption The  Signature Algorithm is sha1WithRSAEncryption.
+    \value dsaWithSHA1 The Signature Algorithm is dsaWithSHA1.
+    \value sha224WithRSAEncryption The Signature Algorithm is sha224WithRSAEncryption.
+    \value sha256WithRSAEncryption The Signature Algorithm is sha256WithRSAEncryption.
+    \value sha384WithRSAEncryption The Signature Algorithm is sha384WithRSAEncryption.
+    \value sha512WithRSAEncryption The Signature Algorithm is sha512WithRSAEncryption.
+    \value mdc2WithRSA The Signature Algorithm is mdc2WithRSA.
+    \value ripemd160WithRSA The Signature Algorithm is ripemd160WithRSA.
+*/
 
 QT_END_NAMESPACE
