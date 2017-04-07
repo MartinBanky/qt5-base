@@ -6,12 +6,8 @@ CONFIG -= app_bundle
 TARGET = crlcreator
 TEMPLATE = app
 
-HEADERS += \
-    crlcreator.h
-
 SOURCES += \
-    main.cpp \
-    crlcreator.cpp
+    main.cpp
 
 RESOURCES += \
     crlcreator.qrc

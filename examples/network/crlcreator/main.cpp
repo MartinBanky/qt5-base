@@ -59,8 +59,6 @@
 #include <QSslCertificateExtension>
 #include <QSslCertificateRevocationList>
 
-#include "crlcreator.h"
-
 void crlInfo(const QSslCertificateRevocationList crl)
 {
     qDebug("Crl Number: %s", crl.crlNumber().constData());
