@@ -571,15 +571,15 @@ QDebug operator<<(QDebug debug, const QSslCertificateRevocationList &certificate
 {
     QDebugStateSaver saver(debug);
     debug.resetFormat().nospace();
-    debug << "QSslCertificateRevocationList("
+    debug << "QSslCertificateRevocationList(Version: "
           << certificateRevocationList.version()
 #ifndef QT_NO_DATESTRING
-          << ", " << certificateRevocationList.lastUpdate()
-          << ", " << certificateRevocationList.nextUpdate()
+          << ", Last Update: " << certificateRevocationList.lastUpdate()
+          << ", Next Update: " << certificateRevocationList.nextUpdate()
 #endif
-          << ", " << certificateRevocationList.crlNumber()
-          << ", " << certificateRevocationList.signatureAlgorithm()
-          << ", " << certificateRevocationList.signature()
+          << ", CRL Number: " << certificateRevocationList.crlNumber()
+          << ", Signature Algorithm: " << certificateRevocationList.signatureAlgorithm()
+          << ", Signature: " << certificateRevocationList.signature()
           << ')';
     return debug;
 }

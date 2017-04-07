@@ -204,7 +204,7 @@ QDebug operator<<(QDebug debug, const QSslRevokedCertificate &revokedCertificate
     QDebugStateSaver saver(debug);
     debug.resetFormat().nospace().noquote();
     debug << "QSslRevokedCertificate(Serial Number=" << revokedCertificate.serialNumber()
-          << ", Revokation Date=" << revokedCertificate.revocationDate()
+          << ", Revocation Date=" << revokedCertificate.revocationDate()
           << ')';
     return debug;
 }
