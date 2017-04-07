@@ -67,10 +67,6 @@ class QSslKeyPrivate
 {
 public:
     inline QSslKeyPrivate()
-        : algorithm(QSsl::Rsa)
-        , bitSize(2048)
-        , cipher(QSslKey::DesEde3Cbc)
-        , pKey(0)
     {
         clear(false);
     }
@@ -105,10 +101,10 @@ public:
 
     bool isNull;
     QSsl::KeyType type;
-    QSsl::KeyAlgorithm algorithm;
+    QSsl::KeyAlgorithm algorithm = QSsl::Rsa;
 
-    qint32 bitSize;
-    QSslKey::Cipher cipher;
+    qint32 bitSize = 2048;
+    QSslKey::Cipher cipher = QSslKey::DesEde3Cbc;
 
     Q_AUTOTEST_EXPORT static QByteArray decrypt(QSslKey::Cipher cipher, const QByteArray &data, const QByteArray &key, const QByteArray &iv);
     Q_AUTOTEST_EXPORT static QByteArray encrypt(QSslKey::Cipher cipher, const QByteArray &data, const QByteArray &key, const QByteArray &iv);
@@ -124,12 +120,10 @@ public:
      * of it's function calls. Not good for batch creating
      * certificates. You would have to close your QSslKey object
      * and reopen it every time you wanted to create a new certificate.
-     * The functionality stays the same. Just the access to the keys
-     * needs to change to add pKey->pkey.{rsa,dsa,dh,ec} to the front
-     * of the key you want to access.
+     * The functionality stays the same.
      */
 #ifndef QT_NO_OPENSSL
-    EVP_PKEY *pKey;
+    EVP_PKEY *pKey = 0;
 #else
     Qt::HANDLE opaque;
     QByteArray derData;

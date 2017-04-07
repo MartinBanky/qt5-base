@@ -173,7 +173,6 @@ QSslCertificate::QSslCertificate(const QSslCertificate &other) : d(other.d)
 QSslCertificate::QSslCertificate()
     : d(new QSslCertificatePrivate)
 {
-    QSslSocketPrivate::ensureInitialized();
 #ifndef QT_NO_OPENSSL
     q_SSL_load_error_strings();
     d->x509 = q_X509_new();
@@ -671,7 +670,7 @@ QList<QSslCertificate> QSslCertificate::fromData(const QByteArray &data, QSsl::E
  */
 QByteArray QSslCertificate::sslErrors() const
 {
-    const QByteArray errorMsg(d->sslError);
+    const QByteArray errorMsg = d->sslError;
 
     d->sslError.clear();
 
@@ -792,6 +791,32 @@ QSslCertificatePrivate::QSslCertificatePrivate()
         , signatureAlgorithm(QSsl::sha256WithRSAEncryption)
         , x509(0)
 {
+    /*
+     * Used to map the NID's to the correct
+     * SignatureAlgorithm enum value
+     */
+    nidToSigAlgorithm << md2WithRSAEncryptionNid
+                      << md4WithRSAEncryptionNid
+                      << md5WithRSAEncryptionNid
+                      << shaWithRSAEncryptionNid
+                      << sha1WithRSAEncryptionNid
+                      << dsaWithSHA1Nid
+                      << sha224WithRSAEncryptionNid
+                      << sha256WithRSAEncryptionNid
+                      << sha384WithRSAEncryptionNid
+                      << sha512WithRSAEncryptionNid
+                      << mdc2WithRSANid
+                      << ripemd160WithRSANid;
+}
+
+/*!
+    \internal
+*/
+QSslCertificatePrivate::QSslCertificatePrivate()
+    : null(true), x509(0)
+{
+    QSslSocketPrivate::ensureInitialized();
+
     /*
      * Used to map the NID's to the correct
      * SignatureAlgorithm enum value

@@ -117,6 +117,7 @@ public:
     QDateTime notValidBefore;
 
     qint32 version;
+    qint32 version = 2;
     QSslKey privateKey;
     QByteArray country;
     QByteArray state;
@@ -130,9 +131,9 @@ public:
     QByteArray sslError;
     QVector<qint32> nidToSigAlgorithm;
     QList<QSslCertificateExtension> extensionsList;
-    QSslCertificate *certificateAuthorityCertificate;
+    QSslCertificate *certificateAuthorityCertificate = 0;
     QSslKey certificateAuthorityKey;
-    QSsl::SignatureAlgorithm signatureAlgorithm;
+    QSsl::SignatureAlgorithm signatureAlgorithm = QSsl::sha256WithRSAEncryption;
 
 #ifndef QT_NO_OPENSSL
     typedef const EVP_MD *(*DigestType)();

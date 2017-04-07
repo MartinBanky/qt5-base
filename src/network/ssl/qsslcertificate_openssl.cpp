@@ -93,11 +93,7 @@ QSsl::SignatureAlgorithm QSslCertificate::signatureAlgorithm() const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
-    qint32 nid;
-    ASN1_OBJECT *aoid;
-
-    q_X509_ALGOR_get0(&aoid, 0, 0, d->x509->sig_alg);
-    nid = OBJ_obj2nid(aoid);
+    qint32 nid = q_X509_get_signature_nid(d->x509);
 
     if (nid) {
         for (quint8 i = 0; i < d->nidToSigAlgorithm.size(); ++i) {
@@ -107,8 +103,6 @@ QSsl::SignatureAlgorithm QSslCertificate::signatureAlgorithm() const
             }
         }
     }
-
-    q_ASN1_OBJECT_free(aoid);
 
     return d->signatureAlgorithm;
 }
@@ -268,16 +262,16 @@ QSslKey QSslCertificate::publicKey() const
     Q_ASSERT(pkey);
 
     if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_RSA) {
-        key.d->pKey->pkey.rsa = q_EVP_PKEY_get1_RSA(pkey);
+        q_EVP_PKEY_set1_RSA(key.d->pKey, q_EVP_PKEY_get1_RSA(pkey));
         key.d->algorithm = QSsl::Rsa;
         key.d->isNull = false;
     } else if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_DSA) {
-        key.d->pKey->pkey.dsa = q_EVP_PKEY_get1_DSA(pkey);
+        q_EVP_PKEY_set1_DSA(key.d->pKey, q_EVP_PKEY_get1_DSA(pkey));
         key.d->algorithm = QSsl::Dsa;
         key.d->isNull = false;
 #ifndef OPENSSL_NO_EC
     } else if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_EC) {
-        key.d->pKey->pkey.ec = q_EVP_PKEY_get1_EC_KEY(pkey);
+        q_EVP_PKEY_set1_EC_KEY(key.d->pKey, q_EVP_PKEY_get1_EC_KEY(pkey));
         key.d->algorithm = QSsl::Ec;
         key.d->isNull = false;
 #endif
@@ -337,6 +331,7 @@ QSslError::SslError QSslCertificate::generateCertificate() const
 
     q_X509_set_version(d->x509, d->version);
 
+#if OPENSSL_VERSION_NUMBER < 0x1010000fL
     QByteArray x509Name;
 
     if (!d->country.isEmpty()) {
@@ -376,6 +371,7 @@ QSslError::SslError QSslCertificate::generateCertificate() const
     }
 
     d->x509->name = x509Name.data();
+#endif // OPENSSL_VERSION_NUMBER < 0x1010000fL
 
     QByteArray serialAscii(QUuid::createUuid().toString().toLatin1());
     serialAscii = serialAscii.mid(1, 8) +  serialAscii.mid(10, 4) +  serialAscii.mid(15, 4)
@@ -393,9 +389,9 @@ QSslError::SslError QSslCertificate::generateCertificate() const
     X509_NAME *issuer = 0;
 
     if (d->certificateAuthorityCertificate && !d->certificateAuthorityCertificate->isNull()) {
-        issuer = d->certificateAuthorityCertificate->d->x509->cert_info->subject;
+        issuer = q_X509_get_subject_name(d->certificateAuthorityCertificate->d->x509);
     } else {
-        issuer = d->x509->cert_info->subject;
+        issuer = q_X509_get_subject_name(d->x509);
     }
 
     q_X509_set_issuer_name(d->x509, issuer);
@@ -503,8 +499,13 @@ void QSslCertificate::setDuration(qint32 days) const
     d->notValidBefore = QDateTime::currentDateTime();
     d->notValidAfter = d->notValidBefore.addDays(days);
 
-    q_X509_gmtime_adj(d->x509->cert_info->validity->notBefore, 0);
-    q_X509_gmtime_adj(d->x509->cert_info->validity->notAfter, days * 86400LL);
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+    q_X509_gmtime_adj(q_X509_get0_notBefore(d->x509), 0);
+    q_X509_gmtime_adj(q_X509_get0_notAfter(d->x509), days * 86400LL);
+#else
+    q_X509_gmtime_adj(q_X509_get_notBefore(d->x509), 0);
+    q_X509_gmtime_adj(q_X509_get_notAfter(d->x509), days * 86400LL);
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 }
 
 void QSslCertificate::setPrivateKey(const QSslKey &privateKey) const
@@ -523,7 +524,7 @@ void QSslCertificate::setSubjectCountry(const QByteArray &country) const
 
     d->country = country;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(country.data()), -1, -1, 0);
 }
@@ -534,7 +535,7 @@ void QSslCertificate::setSubjectState(const QByteArray &state) const
 
     d->state = state;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "ST", MBSTRING_ASC,
         reinterpret_cast<const unsigned char *>(state.data()), -1, -1, 0);
 }
@@ -545,7 +546,7 @@ void QSslCertificate::setSubjectLocation(const QByteArray &location) const
 
     d->location = location;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "L", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(location.data()), -1, -1, 0);
 }
@@ -556,7 +557,7 @@ void QSslCertificate::setSubjectOrginization(const QByteArray &organization) con
 
     d->organization = organization;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "O", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(organization.data()), -1, -1, 0);
 }
@@ -567,7 +568,7 @@ void QSslCertificate::setSubjectOrginizationUnit(const QByteArray &organizationU
 
     d->organizationUnit = organizationUnit;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "OU", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(organizationUnit.data()), -1, -1, 0);
 }
@@ -578,7 +579,7 @@ void QSslCertificate::setSubjectCommonName(const QByteArray &commonName) const
 
     d->commonName = commonName;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(commonName.data()), -1, -1, 0);
 }
@@ -589,7 +590,7 @@ void QSslCertificate::setSubjectEmailAddress(const QByteArray &emailAddress) con
 
     d->emailAddress = emailAddress;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "emailAddress", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(emailAddress.data()), -1, -1, 0);
 }
@@ -600,7 +601,7 @@ void QSslCertificate::setSubjectDistinguishedNameQualifier(const QByteArray &dis
 
     d->distinguishedNameQualifier = distinguishedNameQualifier;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "dnQualifier", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(distinguishedNameQualifier.data()), -1, -1, 0);
 }
@@ -611,7 +612,7 @@ void QSslCertificate::setSubjectSerialNumber(const QByteArray &subjectSerialNumb
 
     d->subjectSerialNumber = subjectSerialNumber;
 
-    X509_NAME *name = d->x509->cert_info->subject;
+    X509_NAME *name = q_X509_get_subject_name(d->x509);
     q_X509_NAME_add_entry_by_txt(name, "serialNumber", MBSTRING_ASC,
             reinterpret_cast<const unsigned char *>(subjectSerialNumber.data()), -1, -1, 0);
 }
@@ -626,7 +627,6 @@ void QSslCertificate::setVersion(qint32 version) const
 
 void QSslCertificate::setX509Extensions(const QList<QSslCertificateExtension> &extensionsList) const
 {
-    Q_UNUSED(extensionsList);
     d->extensionsList = extensionsList;
 }
 

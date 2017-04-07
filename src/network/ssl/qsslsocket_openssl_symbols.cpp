@@ -379,6 +379,9 @@ DEFINEFUNC(BIGNUM *, BN_new, DUMMYARG, DUMMYARG, return 0, return)
 DEFINEFUNC2(int, BN_set_word, BIGNUM *a, a, unsigned long b, b, return 0, return)
 DEFINEFUNC2(ASN1_INTEGER *, BN_to_ASN1_INTEGER, BIGNUM *a, a, ASN1_INTEGER *b, b, return 0, return)
 DEFINEFUNC3(X509_CRL *, d2i_X509_CRL, X509_CRL **a, a, const unsigned char **b, b, long c, c, return 0, return)
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+DEFINEFUNC(int, DSA_bits, DSA *a, a, return 0, return)
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(int, DSA_generate_key, DSA *a, a, return 0, return)
 DEFINEFUNC7(int, DSA_generate_parameters_ex, DSA *a, a, int b, b, const unsigned char *c, c, int d, d, int *e, e, unsigned long *f, f, BN_GENCB *g, g, return 0, return)
 DEFINEFUNC(EC_GROUP *, EC_GROUP_new, const EC_METHOD *a, a, return 0, return)
@@ -543,6 +546,9 @@ DEFINEFUNC(const EVP_CIPHER *, EVP_seed_ofb, DUMMYARG, DUMMYARG, return 0, retur
 DEFINEFUNC2(int, i2d_X509_CRL, X509_CRL *a, a, unsigned char **b, b, return -1, return);
 DEFINEFUNC2(int, PEM_write_bio_X509_CRL, BIO *a, a, X509_CRL *b, b, return 0, return)
 DEFINEFUNC2(int, PEM_write_X509_CRL, FILE *a, a, X509_CRL *b, b, return 0, return);
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+DEFINEFUNC(int, RSA_bits, RSA *a, a, return 0, return)
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC4(int, RSA_generate_key_ex, RSA *a, a, int b, b, BIGNUM *c, c, BN_GENCB *d, d, return 0, return)
 DEFINEFUNC3(int, X509_add_ext, X509 *a, a, X509_EXTENSION *b, b, int c, c, return 0, return)
 DEFINEFUNC(void, X509_ALGOR_free, X509_ALGOR *a, a, return, DUMMYARG)
@@ -575,7 +581,12 @@ DEFINEFUNC2(int, X509_CRL_sign_ctx, X509_CRL *a, a, EVP_MD_CTX *b, b, return 0, 
 DEFINEFUNC(int, X509_CRL_sort, X509_CRL *a, a, return 0, return)
 DEFINEFUNC2(int, X509_CRL_verify, X509_CRL *a, a, EVP_PKEY *b, b, return 0, return)
 DEFINEFUNC(void, X509_EXTENSION_free, X509_EXTENSION *a, a, return, DUMMYARG)
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+DEFINEFUNC(const ASN1_TIME *, X509_get0_notBefore, const X509 *a, a, return 0, return)
+DEFINEFUNC(const ASN1_TIME *, X509_get0_notAfter, const X509 *a, a, return 0, return)
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(EVP_PKEY *, X509_get_pubkey, X509 *a, a, return 0, return)
+DEFINEFUNC(int, X509_get_signature_nid, const X509 *a, a, return 0, return)
 DEFINEFUNC2(ASN1_TIME *, X509_gmtime_adj, ASN1_TIME *a, a, long b, b, return -1, return)
 DEFINEFUNC7(int, X509_NAME_add_entry_by_txt, X509_NAME *a, a, const char *b, b, int c, c, const unsigned char *d, d, int e, e, int f, f, int g, g, return 0, return)
 DEFINEFUNC(void, X509_NAME_free, X509_NAME *a, a, return, DUMMYARG);
@@ -1225,12 +1236,15 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(BN_set_word)
     RESOLVEFUNC(BN_to_ASN1_INTEGER)
     RESOLVEFUNC(d2i_X509_CRL)
+    RESOLVEFUNC(DSA_bits)
     RESOLVEFUNC(DSA_generate_key)
     RESOLVEFUNC(DSA_generate_parameters_ex)
+#ifndef OPENSSL_NO_EC
     RESOLVEFUNC(EC_GROUP_new)
     RESOLVEFUNC(EC_KEY_generate_key)
     RESOLVEFUNC(EC_GFp_mont_method)
     RESOLVEFUNC(EC_KEY_new)
+#endif // OPENSSL_NO_EC
     RESOLVEFUNC(EVP_DigestSignInit)
     RESOLVEFUNC(EVP_MD_CTX_cleanup)
     RESOLVEFUNC(EVP_MD_CTX_init)
@@ -1391,6 +1405,9 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(i2d_X509_CRL)
     RESOLVEFUNC(PEM_write_bio_X509_CRL)
     RESOLVEFUNC(PEM_write_X509_CRL)
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+    RESOLVEFUNC(RSA_bits)
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
     RESOLVEFUNC(RSA_generate_key_ex)
     RESOLVEFUNC(X509_add_ext)
     RESOLVEFUNC(X509_ALGOR_free)
@@ -1423,7 +1440,12 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(X509_CRL_sort)
     RESOLVEFUNC(X509_CRL_verify)
     RESOLVEFUNC(X509_EXTENSION_free)
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+    RESOLVEFUNC(X509_get0_notBefore)
+    RESOLVEFUNC(X509_get0_notAfter)
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
     RESOLVEFUNC(X509_get_pubkey)
+    RESOLVEFUNC(X509_get_signature_nid)
     RESOLVEFUNC(X509_gmtime_adj)
     RESOLVEFUNC(X509_NAME_add_entry_by_txt)
     RESOLVEFUNC(X509_NAME_free)
