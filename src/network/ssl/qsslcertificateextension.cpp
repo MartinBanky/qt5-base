@@ -259,7 +259,7 @@ void QSslCertificateExtension::setNid(qint32 nid)
     Sets the value of the extension. Takes the same values as
     what an openssl.cnf file would take.
  */
-void QSslCertificateExtension::setNidValue(const QByteArray nidValue)
+void QSslCertificateExtension::setNidValue(const QByteArray &nidValue)
 {
     d->nidValue = nidValue;
 }
