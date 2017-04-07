@@ -173,7 +173,6 @@ QSslCertificate::QSslCertificate(const QSslCertificate &other) : d(other.d)
 QSslCertificate::QSslCertificate()
     : d(new QSslCertificatePrivate)
 {
-    QSslSocketPrivate::ensureInitialized();
 #ifndef QT_NO_OPENSSL
     q_SSL_load_error_strings();
     d->x509 = q_X509_new();
@@ -670,7 +669,7 @@ QList<QSslCertificate> QSslCertificate::fromData(const QByteArray &data, QSsl::E
  */
 QByteArray QSslCertificate::sslErrors() const
 {
-    const QByteArray errorMsg(d->sslError);
+    const QByteArray errorMsg = d->sslError;
 
     d->sslError.clear();
 
@@ -769,28 +768,15 @@ static const char *const certificate_blacklist[] = {
     "27:b1",                                           "NIC CA 2014", // intermediate certificate from NIC India (2014)
     0
 };
+
 /*!
     \internal
 */
 QSslCertificatePrivate::QSslCertificatePrivate()
-        : null(true)
-        , version(2)
-        , privateKey(0)
-        , country()
-        , state()
-        , location()
-        , organization()
-        , organizationUnit()
-        , commonName()
-        , emailAddress()
-        , distinguishedNameQualifier()
-        , nidToSigAlgorithm()
-        , extensionsList()
-        , certificateAuthorityCertificate(0)
-        , certificateAuthorityKey(0)
-        , signatureAlgorithm(QSsl::sha256WithRSAEncryption)
-        , x509(0)
+    : null(true), x509(0)
 {
+    QSslSocketPrivate::ensureInitialized();
+
     /*
      * Used to map the NID's to the correct
      * SignatureAlgorithm enum value

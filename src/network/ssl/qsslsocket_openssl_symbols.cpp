@@ -581,7 +581,12 @@ DEFINEFUNC2(int, X509_CRL_sign_ctx, X509_CRL *a, a, EVP_MD_CTX *b, b, return 0, 
 DEFINEFUNC(int, X509_CRL_sort, X509_CRL *a, a, return 0, return)
 DEFINEFUNC2(int, X509_CRL_verify, X509_CRL *a, a, EVP_PKEY *b, b, return 0, return)
 DEFINEFUNC(void, X509_EXTENSION_free, X509_EXTENSION *a, a, return, DUMMYARG)
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+DEFINEFUNC(const ASN1_TIME *, X509_get0_notBefore, const X509 *a, a, return 0, return)
+DEFINEFUNC(const ASN1_TIME *, X509_get0_notAfter, const X509 *a, a, return 0, return)
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(EVP_PKEY *, X509_get_pubkey, X509 *a, a, return 0, return)
+DEFINEFUNC(int, X509_get_signature_nid, const X509 *a, a, return 0, return)
 DEFINEFUNC2(ASN1_TIME *, X509_gmtime_adj, ASN1_TIME *a, a, long b, b, return -1, return)
 DEFINEFUNC7(int, X509_NAME_add_entry_by_txt, X509_NAME *a, a, const char *b, b, int c, c, const unsigned char *d, d, int e, e, int f, f, int g, g, return 0, return)
 DEFINEFUNC(void, X509_NAME_free, X509_NAME *a, a, return, DUMMYARG);
@@ -1435,7 +1440,12 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(X509_CRL_sort)
     RESOLVEFUNC(X509_CRL_verify)
     RESOLVEFUNC(X509_EXTENSION_free)
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+    RESOLVEFUNC(X509_get0_notBefore)
+    RESOLVEFUNC(X509_get0_notAfter)
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
     RESOLVEFUNC(X509_get_pubkey)
+    RESOLVEFUNC(X509_get_signature_nid)
     RESOLVEFUNC(X509_gmtime_adj)
     RESOLVEFUNC(X509_NAME_add_entry_by_txt)
     RESOLVEFUNC(X509_NAME_free)

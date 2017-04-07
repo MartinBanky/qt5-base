@@ -818,6 +818,7 @@ int q_X509_CRL_sort(X509_CRL *a);
 int q_X509_CRL_verify(X509_CRL *a, EVP_PKEY *b);
 void q_X509_EXTENSION_free(X509_EXTENSION *a);
 EVP_PKEY *q_X509_get_pubkey(X509 *a);
+int q_X509_get_signature_nid(const X509 *a);
 ASN1_TIME *q_X509_gmtime_adj(ASN1_TIME *a, long b);
 int q_X509_NAME_add_entry_by_txt(X509_NAME *a, const char *b, int c, const unsigned char *d, int e, int f, int g);
 void q_X509_NAME_free(X509_NAME *a);
@@ -940,8 +941,15 @@ DSA *q_d2i_DSAPrivateKey(DSA **a, unsigned char **pp, long length);
 #define q_sk_SSL_CIPHER_value(st, i) q_SKM_sk_value(SSL_CIPHER, (st), (i))
 #define q_SSL_CTX_add_extra_chain_cert(ctx,x509) \
         q_SSL_CTX_ctrl(ctx,SSL_CTRL_EXTRA_CHAIN_CERT,0,(char *)x509)
+
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+const ASN1_TIME *q_X509_get0_notBefore(const X509 *a);
+const ASN1_TIME *q_X509_get0_notAfter(const X509 *a);
+#else
 #define q_X509_get_notAfter(x) X509_get_notAfter(x)
 #define q_X509_get_notBefore(x) X509_get_notBefore(x)
+#endif
+
 #define q_EVP_PKEY_assign_RSA(pkey,rsa) q_EVP_PKEY_assign((pkey),EVP_PKEY_RSA,\
                                         (char *)(rsa))
 #define q_EVP_PKEY_assign_DSA(pkey,dsa) q_EVP_PKEY_assign((pkey),EVP_PKEY_DSA,\
