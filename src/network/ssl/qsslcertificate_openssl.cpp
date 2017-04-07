@@ -100,8 +100,12 @@ QByteArray QSslCertificate::serialNumber() const
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
     if (d->serialNumberString.isEmpty() && d->x509) {
         ASN1_INTEGER *serialNumber = d->x509->cert_info->serialNumber;
-        d->serialNumberHex = QByteArray(reinterpret_cast<const char *>(serialNumber->data),
-                serialNumber->length).toHex().toUpper();
+        BIGNUM *serialBigNumber = q_ASN1_INTEGER_to_BN(serialNumber, 0);
+
+        d->serialNumberHex = q_BN_bn2dec(serialBigNumber);
+        q_BN_free(serialBigNumber);
+        d->serialNumberHex = d->serialNumberHex.toHex().toUpper()
+
         QByteArray hexString;
         hexString.reserve(serialNumber->length * 3);
         for (int a = 0; a < serialNumber->length; ++a) {
