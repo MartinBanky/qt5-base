@@ -65,3 +65,21 @@
 X509v3 Authority Key Identifier:
     keyid:16:D9:2F:E7:6E:09:3F:FF:46:0F:58:4B:30:34:7A:5D:0A:24:DC:9E
 //! [2]
+
+//! [3]
+#define SN_subject_key_identifier               "subjectKeyIdentifier"
+#define LN_subject_key_identifier               "X509v3 Subject Key Identifier"
+#define NID_subject_key_identifier              82
+#define OBJ_subject_key_identifier              OBJ_id_ce,14L
+//! [3]
+
+//! [4]
+    QSslCertificateExtension extension;
+    extension.setNid(NID_subject_key_identifier);
+    extension.setNidValue("hash")
+//! [4]
+
+//! [5]
+X509v3 Subject Key Identifier:
+    72:36:35:6E:BC:2F:5E:D1:70:5F:C7:4A:00:EE:00:FC:48:18:A0:92
+//! [5]
