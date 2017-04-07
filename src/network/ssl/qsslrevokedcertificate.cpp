@@ -75,7 +75,7 @@ QSslRevokedCertificate::QSslRevokedCertificate()
     Constructs a QSslRevokedCertificate object with the serial number and
     revocation date set.
  */
-QSslRevokedCertificate::QSslRevokedCertificate(const QByteArray serialNumber, const QDateTime revocationDate)
+QSslRevokedCertificate::QSslRevokedCertificate(const QByteArray &serialNumber, const QDateTime &revocationDate)
     : d(new QSslRevokedCertificatePrivate)
 {
     d->isNull = false;
@@ -165,7 +165,7 @@ QDateTime QSslRevokedCertificate::revocationDate()const
 /*!
     Sets the serial number of the revoked certificate.
  */
-void QSslRevokedCertificate::setSerialNumber(const QByteArray serialNumber) const
+void QSslRevokedCertificate::setSerialNumber(const QByteArray &serialNumber) const
 {
     if (!serialNumber.isEmpty()) {
         d->serialNumber = serialNumber;
@@ -179,7 +179,7 @@ void QSslRevokedCertificate::setSerialNumber(const QByteArray serialNumber) cons
 /*!
     Sets the revocation date of the revoked certificate.
  */
-void QSslRevokedCertificate::setRevocationDate(const QDateTime revocationDate) const
+void QSslRevokedCertificate::setRevocationDate(const QDateTime &revocationDate) const
 {
     if (revocationDate.isValid()) {
         d->revocationDate = revocationDate;
@@ -191,7 +191,6 @@ void QSslRevokedCertificate::setRevocationDate(const QDateTime revocationDate) c
 }
 
 QSslRevokedCertificatePrivate::QSslRevokedCertificatePrivate()
-    : isNull(true)
 {
 }
 

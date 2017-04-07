@@ -224,7 +224,7 @@ bool QSslCertificateRevocationList::operator==(const QSslCertificateRevocationLi
     to an existing certificate revocation list
  */
 QSslError::SslError QSslCertificateRevocationList::addRevokedCertificates(
-        const QList<QSslCertificate> certificatesToRevoke) const
+        const QList<QSslCertificate> &certificatesToRevoke) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
@@ -278,7 +278,7 @@ QList<QSslCertificateExtension> QSslCertificateRevocationList::extensions() cons
     but not dsaWithSHA1.
  */
 QSslError::SslError QSslCertificateRevocationList::generateCertificateRevocationList(
-        const QList<QSslCertificate> certificatesToRevoke) const
+        const QList<QSslCertificate> &certificatesToRevoke) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
@@ -369,7 +369,7 @@ QDateTime QSslCertificateRevocationList::nextUpdate() const
     \a dateTime from the certificate revocation list.
  */
 QSslError::SslError QSslCertificateRevocationList::removeRevokedCertificates(
-        const QDateTime dateTime) const
+        const QDateTime &dateTime) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
@@ -381,7 +381,7 @@ QSslError::SslError QSslCertificateRevocationList::removeRevokedCertificates(
     from the certificate revocation list.
  */
 QSslError::SslError QSslCertificateRevocationList::removeRevokedCertificates(
-        const QList<QSslRevokedCertificate> certificatesToRemove) const
+        const QList<QSslRevokedCertificate> &certificatesToRemove) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
@@ -417,7 +417,7 @@ void QSslCertificateRevocationList::setCertificateAuthority(QSslCertificate *cer
 /*!
     Sets the certificate revocation list number.
  */
-void QSslCertificateRevocationList::setCrlNumber(QByteArray crlNumber) const
+void QSslCertificateRevocationList::setCrlNumber(const QByteArray &crlNumber) const
 {
     d->m_crlNumber = crlNumber;
 }
@@ -436,7 +436,7 @@ void QSslCertificateRevocationList::setDuration(qint32 hours) const
     the certificate revocation list.
  */
 void QSslCertificateRevocationList::setSignatureAlgorithm(
-        const QSsl::SignatureAlgorithm signatureAlgorithm) const
+        QSsl::SignatureAlgorithm signatureAlgorithm) const
 {
     d->m_signatureAlgorithm = signatureAlgorithm;
 }
@@ -498,7 +498,8 @@ QString QSslCertificateRevocationList::toText() const
     Verifies a certificate revocation list. The CA chain to be verified with is passed in the
     \a caCertificates parameter.
  */
-QSslError QSslCertificateRevocationList::verify(const QList<QSslCertificate> &caCertificates) const
+QSslError::SslError QSslCertificateRevocationList::verify(
+        const QList<QSslCertificate> &caCertificates) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
@@ -519,18 +520,6 @@ QByteArray QSslCertificateRevocationList::version() const
     \internal
  */
 QSslCertificateRevocationListPrivate::QSslCertificateRevocationListPrivate()
-        : null(true)
-        , valid(false)
-        , hours(24)
-        , m_crlNumber()
-        , m_lastUpdate()
-        , m_nextUpdate()
-        , certificateAuthorityCertificate(0)
-        , certificateAuthorityKey()
-        , nidToSigAlgorithm(0)
-        , m_signatureAlgorithm(QSsl::sha256WithRSAEncryption)
-        , x509Crl(0)
-        , ref()
 {
     /*
      * Used to map the NID's to the correct

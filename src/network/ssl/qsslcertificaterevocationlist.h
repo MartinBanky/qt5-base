@@ -68,22 +68,22 @@ public:
     ~QSslCertificateRevocationList();
 #ifdef Q_COMPILER_RVALUE_REFS
     QSslCertificateRevocationList &operator=(QSslCertificateRevocationList &&other) Q_DECL_NOTHROW
-            {swap(other); return *this;}
+    { swap(other); return *this; }
 #endif
     QSslCertificateRevocationList &operator=(const QSslCertificateRevocationList &other);
 
     void swap(QSslCertificateRevocationList &other) Q_DECL_NOTHROW
-            {qSwap(d, other.d);}
+    { qSwap(d, other.d); }
 
     bool operator==(const QSslCertificateRevocationList &other) const;
     inline bool operator!=(const QSslCertificateRevocationList &other) const
-            {return !operator==(other);}
+    { return !operator==(other); }
 
-    QSslError::SslError addRevokedCertificates(const QList<QSslCertificate> certificatesToRevoke) const;
-    QSslError::SslError generateCertificateRevocationList(const QList<QSslCertificate> certificatesToRevoke) const;
-    QSslError::SslError removeRevokedCertificates(const QDateTime dateTime) const;
-    QSslError::SslError removeRevokedCertificates(const QList<QSslRevokedCertificate> certificatesToRemove) const;
-    QSslError verify(const QList<QSslCertificate> &caCertificates) const;
+    QSslError::SslError addRevokedCertificates(const QList<QSslCertificate> &certificatesToRevoke) const;
+    QSslError::SslError generateCertificateRevocationList(const QList<QSslCertificate> &certificatesToRevoke) const;
+    QSslError::SslError removeRevokedCertificates(const QDateTime &dateTime) const;
+    QSslError::SslError removeRevokedCertificates(const QList<QSslRevokedCertificate> &certificatesToRemove) const;
+    QSslError::SslError verify(const QList<QSslCertificate> &caCertificates) const;
 
     Qt::HANDLE handle() const;
     bool isNull() const;
@@ -95,9 +95,9 @@ public:
 
     void clear();
     void setCertificateAuthority(QSslCertificate *certificate, const QSslKey &key) const;
-    void setCrlNumber(QByteArray crlNumber) const;
+    void setCrlNumber(const QByteArray &crlNumber) const;
     void setDuration(qint32 hours) const;
-    void setSignatureAlgorithm(const QSsl::SignatureAlgorithm
+    void setSignatureAlgorithm(QSsl::SignatureAlgorithm
             signatureAlgorithm = QSsl::sha256WithRSAEncryption) const;
 
     // Certificate info

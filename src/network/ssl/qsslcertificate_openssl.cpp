@@ -430,9 +430,8 @@ static QVariant x509ExtensionToValue(X509_EXTENSION *ext)
         {
             void *extInternal = q_X509V3_EXT_d2i(ext);
             const X509V3_EXT_METHOD *method = q_X509V3_EXT_get(ext);
-            QVariant result(QString::fromUtf8(method->i2s(method, extInternal)));
 
-            return result;
+            return QString::fromUtf8(method->i2s(method, extInternal));
         }
     }
 

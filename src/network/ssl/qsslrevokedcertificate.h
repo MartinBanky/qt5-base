@@ -56,11 +56,11 @@ class Q_NETWORK_EXPORT QSslRevokedCertificate
 {
 public:
     QSslRevokedCertificate();
-    explicit QSslRevokedCertificate(const QByteArray serialNumber, const QDateTime revocationDate);
+    explicit QSslRevokedCertificate(const QByteArray &serialNumber, const QDateTime &revocationDate);
     QSslRevokedCertificate(const QSslRevokedCertificate &other);
 #ifdef Q_COMPILER_RVALUE_REFS
     QSslRevokedCertificate &operator=(QSslRevokedCertificate &&other) Q_DECL_NOTHROW
-            { swap(other); return *this; }
+    { swap(other); return *this; }
 #endif
     QSslRevokedCertificate &operator=(const QSslRevokedCertificate &other);
     ~QSslRevokedCertificate();
@@ -70,8 +70,8 @@ public:
     bool operator==(const QSslRevokedCertificate &other) const;
     inline bool operator!=(const QSslRevokedCertificate &other) const { return !operator==(other); }
 
-    void setSerialNumber(const QByteArray serialNumber) const;
-    void setRevocationDate(const QDateTime revocationDate) const;
+    void setSerialNumber(const QByteArray &serialNumber) const;
+    void setRevocationDate(const QDateTime &revocationDate) const;
 
     bool isNull() const;
     QByteArray serialNumber() const;

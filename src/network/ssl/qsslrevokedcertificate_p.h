@@ -62,7 +62,7 @@ public:
     QSslRevokedCertificatePrivate();
     ~QSslRevokedCertificatePrivate();
 
-    bool isNull;
+    bool isNull = true;
     QByteArray serialNumber;
     QDateTime revocationDate;
 };

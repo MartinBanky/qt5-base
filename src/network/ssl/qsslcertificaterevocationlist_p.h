@@ -93,21 +93,21 @@ public:
     QSslCertificateRevocationListPrivate();
     ~QSslCertificateRevocationListPrivate();
 
-    bool null;
-    bool valid;
+    bool null = true;
+    bool valid = false;
 
-    qint32 hours;
+    qint32 hours = 24;
 
-    QByteArray m_crlNumber;
+    QByteArray m_crlNumber = 0;
 
     QDateTime m_lastUpdate;
     QDateTime m_nextUpdate;
 
-    QSslCertificate *certificateAuthorityCertificate;
+    QSslCertificate *certificateAuthorityCertificate = 0;
     QSslKey certificateAuthorityKey;
     QVector<qint32> nidToSigAlgorithm;
     QList<QSslRevokedCertificate> m_revokedCertificates;
-    QSsl::SignatureAlgorithm m_signatureAlgorithm;
+    QSsl::SignatureAlgorithm m_signatureAlgorithm = QSsl::sha256WithRSAEncryption;
 
 #ifndef QT_NO_OPENSSL
     X509_CRL *x509Crl;
@@ -116,11 +116,11 @@ public:
 
     QAtomicInt ref;
 
-    QSslError::SslError addRevokedCertificates(const QList<QSslCertificate> certificatesToRevoke);
-    QSslError::SslError generateCertificateRevocationList(const QList<QSslCertificate> certificatesToRevoke);
-    QSslError::SslError removeRevokedCertificates(const QDateTime dateTime);
-    QSslError::SslError removeRevokedCertificates(const QList<QSslRevokedCertificate> certificatesToRemove);
-    QSslError verify(const QList<QSslCertificate> &caCertificates);
+    QSslError::SslError addRevokedCertificates(const QList<QSslCertificate> &certificatesToRevoke);
+    QSslError::SslError generateCertificateRevocationList(const QList<QSslCertificate> &certificatesToRevoke);
+    QSslError::SslError removeRevokedCertificates(const QDateTime &dateTime);
+    QSslError::SslError removeRevokedCertificates(const QList<QSslRevokedCertificate> &certificatesToRemove);
+    QSslError::SslError verify(const QList<QSslCertificate> &caCertificates);
 
     Qt::HANDLE handle() const;
 
@@ -131,12 +131,7 @@ public:
     void crlFromPem(const QByteArray &pem);
     void crlFromDer(const QByteArray &der);
     void init(const QByteArray &data, QSsl::EncodingFormat format);
-    void revokeCertificates(QList<QSslRevokedCertificate> revokedCerts, const QByteArray addToCrl);
-    void setCertificateAuthority(QSslCertificate *certificate, const QSslKey &key) const;
-    void setCrlNumber(QByteArray crlNumber) const;
-    void setDuration(qint32 hours) const;
-    void setSignatureAlgorithm(const QSsl::SignatureAlgorithm
-            signatureAlgorithm = QSsl::sha256WithRSAEncryption) const;
+    void revokeCertificates(const QList<QSslRevokedCertificate> &revokedCerts, const QByteArray &addToCrl);
     void setStartOfCrl();
     void setTimes();
 
