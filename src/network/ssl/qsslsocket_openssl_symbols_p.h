@@ -801,6 +801,7 @@ const ASN1_TIME *q_X509_CRL_get0_lastUpdate(const X509_CRL *a);
 const ASN1_TIME *q_X509_CRL_get0_nextUpdate(const X509_CRL *a);
 STACK_OF(X509_REVOKED) *q_X509_CRL_get_REVOKED(X509_CRL *a);
 void q_X509_CRL_get0_signature(const X509_CRL *a, const ASN1_BIT_STRING **b, const X509_ALGOR **c);
+int q_X509_CRL_get_signature_nid(const X509_CRL *a);
 #else
 #define q_X509_CRL_get_issuer(x) X509_CRL_get_issuer(x)
 #define q_X509_CRL_get_lastUpdate(x) X509_CRL_get_lastUpdate(x)

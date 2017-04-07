@@ -571,6 +571,7 @@ DEFINEFUNC(const ASN1_TIME *, X509_CRL_get0_lastUpdate, const X509_CRL *a, a, re
 DEFINEFUNC(const ASN1_TIME *, X509_CRL_get0_nextUpdate, const X509_CRL *a, a, return 0, return)
 DEFINEFUNC(STACK_OF(X509_REVOKED) *, X509_CRL_get_REVOKED, X509_CRL *a, a, return 0, return)
 DEFINEFUNC3(void, X509_CRL_get0_signature, const X509_CRL *a, a, const ASN1_BIT_STRING **b, b, const X509_ALGOR **c, c, return, DUMMYARG)
+DEFINEFUNC(int, X509_CRL_get_signature_nid, const X509_CRL *a, a, return 0, return)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC2(int, X509_CRL_match, const X509_CRL *a, a, const X509_CRL *b, b, return -1, return)
 DEFINEFUNC(X509_CRL *, X509_CRL_new, DUMMYARG, DUMMYARG, return 0, return)
@@ -1427,6 +1428,7 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(X509_CRL_get0_nextUpdate)
     RESOLVEFUNC(X509_CRL_get_REVOKED)
     RESOLVEFUNC(X509_CRL_get0_signature)
+    RESOLVEFUNC(X509_CRL_get_signature_nid)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
     RESOLVEFUNC(X509_CRL_match)
     RESOLVEFUNC(X509_CRL_new)

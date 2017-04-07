@@ -646,21 +646,13 @@ QByteArray QSslCertificateRevocationListPrivate::signature() const
  */
 QSsl::SignatureAlgorithm QSslCertificateRevocationListPrivate::signatureAlgorithm()
 {
-    qint32 nid;
-    ASN1_OBJECT *aoid;
-
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-    X509_ALGOR *sigAlgorithm = q_X509_ALGOR_new();
-    q_X509_CRL_get0_signature(x509Crl, 0, &sigAlgorithm);
-
-    q_X509_ALGOR_get0(&aoid, 0, 0, sigAlgorithm);
-    nid = OBJ_obj2nid(aoid);
-
-    q_X509_ALGOR_free(sigAlgorithm);
+    qint32 nid = q_X509_CRL_get_signature_nid(x509Crl);
 #else
-
+    ASN1_OBJECT *aoid;
     q_X509_ALGOR_get0(&aoid, 0, 0, x509Crl->sig_alg);
-    nid = OBJ_obj2nid(aoid);
+    qint32 nid = OBJ_obj2nid(aoid);
+    q_ASN1_OBJECT_free(aoid);
 #endif //  OPENSSL_VERSION_NUMBER >= 0x1010000fL
 
     if (nid) {
@@ -671,8 +663,6 @@ QSsl::SignatureAlgorithm QSslCertificateRevocationListPrivate::signatureAlgorith
             }
         }
     }
-
-    q_ASN1_OBJECT_free(aoid);
 
     return m_signatureAlgorithm;
 }
