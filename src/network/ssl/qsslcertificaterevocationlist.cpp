@@ -525,18 +525,18 @@ QSslCertificateRevocationListPrivate::QSslCertificateRevocationListPrivate()
      * Used to map the NID's to the correct
      * SignatureAlgorithm enum value
      */
-    nidToSigAlgorithm << md2WithRSAEncryptionNid
-                      << md4WithRSAEncryptionNid
-                      << md5WithRSAEncryptionNid
-                      << shaWithRSAEncryptionNid
-                      << sha1WithRSAEncryptionNid
-                      << dsaWithSHA1Nid
-                      << sha224WithRSAEncryptionNid
-                      << sha256WithRSAEncryptionNid
-                      << sha384WithRSAEncryptionNid
-                      << sha512WithRSAEncryptionNid
-                      << mdc2WithRSANid
-                      << ripemd160WithRSANid;
+    nidToSigAlgorithm.append(md2WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(md4WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(md5WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(shaWithRSAEncryptionNid);
+    nidToSigAlgorithm.append(sha1WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(dsaWithSHA1Nid);
+    nidToSigAlgorithm.append(sha224WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(sha256WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(sha384WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(sha512WithRSAEncryptionNid);
+    nidToSigAlgorithm.append(mdc2WithRSANid);
+    nidToSigAlgorithm.append(ripemd160WithRSANid);
 
     QSslSocketPrivate::ensureInitialized();
 #ifndef QT_NO_OPENSSL

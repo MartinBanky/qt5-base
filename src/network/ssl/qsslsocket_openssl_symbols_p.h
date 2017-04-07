@@ -821,12 +821,17 @@ int q_X509_CRL_sort(X509_CRL *a);
 int q_X509_CRL_verify(X509_CRL *a, EVP_PKEY *b);
 void q_X509_EXTENSION_free(X509_EXTENSION *a);
 EVP_PKEY *q_X509_get_pubkey(X509 *a);
+ASN1_INTEGER *q_X509_get_serialNumber(X509 *a);
 ASN1_TIME *q_X509_gmtime_adj(ASN1_TIME *a, long b);
 int q_X509_NAME_add_entry_by_txt(X509_NAME *a, const char *b, int c, const unsigned char *d, int e, int f, int g);
 void q_X509_NAME_free(X509_NAME *a);
 X509 *q_X509_new();
 void q_X509_OBJECT_free_contents(X509_OBJECT *a);
 X509_REVOKED *q_X509_REVOKED_new();
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+const ASN1_TIME *q_X509_REVOKED_get0_revocationDate(const X509_REVOKED *a);
+const ASN1_INTEGER *q_X509_REVOKED_get0_serialNumber(const X509_REVOKED *a);
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 int q_X509_REVOKED_set_revocationDate(X509_REVOKED *a, ASN1_TIME *b);
 int q_X509_REVOKED_set_serialNumber(X509_REVOKED *a, ASN1_INTEGER *b);
 int q_X509_set_issuer_name(X509 *a, X509_NAME *b);

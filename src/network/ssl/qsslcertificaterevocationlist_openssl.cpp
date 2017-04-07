@@ -46,6 +46,8 @@
 #include <QtNetwork/qsslcertificate.h>
 #include <QtNetwork/qsslrevokedcertificate.h>
 #include <QtNetwork/qsslcertificaterevocationlist.h>
+#include <QtCore/qbytearraymatcher.h>
+
 #ifdef DEVELOPMENT
 #include "qssl_p.h"
 #include "qsslkey_p.h"
@@ -125,7 +127,7 @@ QSslError::SslError QSslCertificateRevocationListPrivate::addRevokedCertificates
             q_X509_REVOKED_set_revocationDate(revoked, q_X509_CRL_get_lastUpdate(x509Crl));
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
             q_X509_REVOKED_set_serialNumber(revoked,
-                    certificatesToRevoke.at(i).d->x509->cert_info->serialNumber);
+                    q_X509_get_serialNumber(certificatesToRevoke.at(i).d->x509));
             q_X509_CRL_add0_revoked(x509Crl, revoked);
         }
     }
@@ -207,7 +209,7 @@ void QSslCertificateRevocationListPrivate::crlFromDer(const QByteArray &der)
     qint32 size = der.size();
 
     if (size) {
-        const unsigned char *data(reinterpret_cast<const unsigned char *>(der.constData()));
+        auto *data(reinterpret_cast<const unsigned char *>(der.constData()));
 
         x509Crl = q_d2i_X509_CRL(0, &data, size);
 
@@ -224,18 +226,17 @@ void QSslCertificateRevocationListPrivate::crlFromDer(const QByteArray &der)
 void QSslCertificateRevocationListPrivate::crlFromPem(const QByteArray &pem)
 {
     QByteArray text = pem;
-    static const QByteArray begin = ("-----BEGIN X509 CRL-----");
-    static const QByteArray end = ("-----END X509 CRL-----");
+    static const auto begin = qMakeStaticByteArrayMatcher("-----BEGIN X509 CRL-----");
+    static const auto end = qMakeStaticByteArrayMatcher("-----END X509 CRL-----");
 
-    if (text.contains(begin) && text.contains(end)) {
-        text.replace('\r', "");
-        text.replace('\n', "");
+    if (begin.indexIn(text) && end.indexIn(text)) {
+        text = text.simplified();
 
-        qint32 beginSize = begin.size();
+        qint32 beginSize = begin.pattern().size();
 
-        text = QByteArray::fromBase64(text.mid(text.indexOf(begin) + beginSize,
-                text.indexOf(end) - beginSize));
-        const unsigned char *data = reinterpret_cast<const unsigned char *>(text.constData());
+        text = QByteArray::fromBase64(text.mid(begin.indexIn(text) + beginSize,
+                end.indexIn(text) - beginSize));
+        auto *data = reinterpret_cast<const unsigned char *>(text.constData());
 
         x509Crl = q_d2i_X509_CRL(0, &data, text.size());
 
@@ -378,7 +379,7 @@ QDateTime QSslCertificateRevocationListPrivate::nextUpdate()
  */
 QByteArray QSslCertificateRevocationListPrivate::QByteArrayFromX509Crl(QSsl::EncodingFormat format) const
 {
-    if (!x509Crl) {
+    if (Q_UNLIKELY(!x509Crl)) {
         qCWarning(lcSsl, "QSslCertificateRevocationListPrivate::QByteArrayFromX509Crl: null x509Crl");
         return QByteArray();
     }
@@ -399,7 +400,7 @@ QByteArray QSslCertificateRevocationListPrivate::QByteArrayFromX509Crl(QSsl::Enc
     } else {
         qint32 size = q_i2d_X509_CRL(x509Crl, 0);
         QByteArray x509CrlString(size, '0');
-        unsigned char *data = reinterpret_cast<unsigned char *>(x509CrlString.data());
+        auto *data = reinterpret_cast<unsigned char *>(x509CrlString.data());
         size = q_i2d_X509_CRL(x509Crl, &data);
 
         return x509CrlString.left(size);
@@ -411,7 +412,7 @@ QByteArray QSslCertificateRevocationListPrivate::QByteArrayFromX509Crl(QSsl::Enc
  */
 QString QSslCertificateRevocationListPrivate::QStringFromX509Crl() const
 {
-    if (!x509Crl) {
+    if (Q_UNLIKELY(!x509Crl)) {
         qCWarning(lcSsl, "QSslCertificateRevocationListPrivate::QStringFromX509Crl: null x509Crl");
         return QString();
     }
@@ -567,15 +568,33 @@ QList<QSslRevokedCertificate> QSslCertificateRevocationListPrivate::revokedCerti
 {
     if (m_revokedCertificates.isEmpty()) {
         X509_REVOKED *revoked;
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+        BIGNUM *serialBigNumber
+        ASN1_INTEGER *serialAsn1Number;
+        QByteArray serialNumber;
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 
         for (qint32 i = 0; i < q_SKM_sk_num(X509_REVOKED, q_X509_CRL_get_REVOKED(x509Crl)); ++i) {
             QSslRevokedCertificate revokedCert;
 
             revoked = q_SKM_sk_value(X509_REVOKED, q_X509_CRL_get_REVOKED(x509Crl), i);
+
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+            serialAsn1Number = q_X509_REVOKED_get0_serialNumber(revoked);
+            serialBigNumber = q_ASN1_INTEGER_to_BN(serialAsn1Number, 0);
+            q_ASN1_STRING_free(serialAsn1Number);
+
+            serialNumber = q_BN_bn2dec(serialBigNumber);
+            q_BN_free(serialBigNumber);
+
+            revokedCert.setSerialNumber(serialNumber.toHex().toUpper());
+            revokedCert.setRevocationDate(q_getTimeFromASN1(q_X509_REVOKED_get0_revocationDate(revoked)));
+#else
             revokedCert.setSerialNumber(QByteArray(
                     reinterpret_cast<const char *>(revoked->serialNumber->data),
                     revoked->serialNumber->length).toHex().toUpper());
             revokedCert.setRevocationDate(q_getTimeFromASN1(revoked->revocationDate));
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 
             m_revokedCertificates.append(revokedCert);
         }
@@ -595,7 +614,8 @@ void QSslCertificateRevocationListPrivate::setStartOfCrl()
     }
 
     q_X509_CRL_set_version(x509Crl, 1);
-    q_X509_CRL_set_issuer_name(x509Crl, certificateAuthorityCertificate->d->x509->cert_info->subject);
+    q_X509_CRL_set_issuer_name(x509Crl,
+            q_X509_get_subject_name(certificateAuthorityCertificate->d->x509));
     addExtension(certificateAuthorityCertificate->d->x509, x509Crl,
             NID_authority_key_identifier, "keyid:always");
 }
@@ -763,7 +783,7 @@ QSslError::SslError QSslCertificateRevocationListPrivate::verify(
 
     X509_STORE *certStore(q_X509_STORE_new());
 
-    if (!certStore) {
+    if (Q_UNLIKELY(!certStore)) {
         qCWarning(lcSsl) << "Unable to create certificate store";
         return QSslError::UnspecifiedError;
     }

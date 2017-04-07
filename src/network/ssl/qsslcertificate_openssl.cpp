@@ -104,7 +104,7 @@ QByteArray QSslCertificate::serialNumber() const
 
         d->serialNumberHex = q_BN_bn2dec(serialBigNumber);
         q_BN_free(serialBigNumber);
-        d->serialNumberHex = d->serialNumberHex.toHex().toUpper()
+        d->serialNumberHex = d->serialNumberHex.toHex().toUpper();
 
         QByteArray hexString;
         hexString.reserve(serialNumber->length * 3);
