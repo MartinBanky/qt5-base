@@ -474,12 +474,17 @@ BIGNUM *q_BN_new();
 int q_BN_set_word(BIGNUM *a, unsigned long b);
 ASN1_INTEGER *q_BN_to_ASN1_INTEGER(BIGNUM *a, ASN1_INTEGER *b);
 X509_CRL *q_d2i_X509_CRL(X509_CRL **a, const unsigned char **b, long c);
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+int q_DSA_bits(DSA *a);
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 int q_DSA_generate_key(DSA *a);
 int q_DSA_generate_parameters_ex(DSA *a, int b, const unsigned char *c, int d, int *e, unsigned long *f, BN_GENCB *g);
+#ifndef OPENSSL_NO_EC
 EC_GROUP *q_EC_GROUP_new(const EC_METHOD *a);
 int q_EC_KEY_generate_key(EC_KEY *a);
 const EC_METHOD *q_EC_GFp_mont_method();
 EC_KEY *q_EC_KEY_new();
+#endif // OPENSSL_NO_EC
 int q_EVP_DigestSignInit(EVP_MD_CTX *a, EVP_PKEY_CTX **b, const EVP_MD *c, ENGINE *d, EVP_PKEY *e);
 int q_EVP_MD_CTX_cleanup(EVP_MD_CTX *a);
 void q_EVP_MD_CTX_init(EVP_MD_CTX *a);
@@ -771,6 +776,9 @@ inline const EVP_CIPHER *q_EVP_seed_ofb(){return 0;}
 int q_i2d_X509_CRL(X509_CRL *a, unsigned char **b);
 int q_PEM_write_bio_X509_CRL(BIO *a, X509_CRL *b);
 int q_PEM_write_X509_CRL(FILE *a, X509_CRL *b);
+#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+int q_RSA_bits(RSA *a);
+#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 int q_RSA_generate_key_ex(RSA *a, int b, BIGNUM *c, BN_GENCB *d);
 int q_X509_add_ext(X509 *a, X509_EXTENSION *b, int c);
 void q_X509_ALGOR_free(X509_ALGOR *a);

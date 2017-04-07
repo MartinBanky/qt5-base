@@ -268,16 +268,16 @@ QSslKey QSslCertificate::publicKey() const
     Q_ASSERT(pkey);
 
     if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_RSA) {
-        key.d->pKey->pkey.rsa = q_EVP_PKEY_get1_RSA(pkey);
+        q_EVP_PKEY_set1_RSA(key.d->pKey, q_EVP_PKEY_get1_RSA(pkey));
         key.d->algorithm = QSsl::Rsa;
         key.d->isNull = false;
     } else if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_DSA) {
-        key.d->pKey->pkey.dsa = q_EVP_PKEY_get1_DSA(pkey);
+        q_EVP_PKEY_set1_DSA(key.d->pKey, q_EVP_PKEY_get1_DSA(pkey));
         key.d->algorithm = QSsl::Dsa;
         key.d->isNull = false;
 #ifndef OPENSSL_NO_EC
     } else if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_EC) {
-        key.d->pKey->pkey.ec = q_EVP_PKEY_get1_EC_KEY(pkey);
+        q_EVP_PKEY_set1_EC_KEY(key.d->pKey, q_EVP_PKEY_get1_EC_KEY(pkey));
         key.d->algorithm = QSsl::Ec;
         key.d->isNull = false;
 #endif
