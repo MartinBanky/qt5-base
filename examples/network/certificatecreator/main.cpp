@@ -48,6 +48,7 @@
 **
 ****************************************************************************/
 
+#include <QDebug>
 #include <QSslKey>
 #include <QSslCertificate>
 #include <QCoreApplication>
@@ -119,12 +120,6 @@ int main(int argc, char *argv[])
     // Certificate chain. Install on client systems to have the new Certificate Authority recognized by the browser
     certificateServer.createChainCertificate(caCertificate, intermdiateCertificate, "ca-chain.cert.pem");
 
-    // Create the client web server key
-    QSslKey webServerKey;
-
-    certificateServer.createPrivateKey(webServerKey, 2048);
-    certificateServer.encryptKey(webServerKey, "server.ssltestserver.org.key.pem");
-
     QSslCertificateExtension netscapeCertTypeExt;
     QSslCertificateExtension netscapeCommentExt;
     QSslCertificateExtension crlDistributionPointsExt;
@@ -147,16 +142,25 @@ int main(int argc, char *argv[])
     extensions.append(keyUsageExt);
     extensions.append(crlDistributionPointsExt);
 
-    // Create client web server certificate
-    QSslCertificate *webServerCertificate(new QSslCertificate);
+    for(quint16 i = 0; i < 1000; ++i){
+        qDebug() << "Creating cert:" << i;
+        // Create the client web server key
+        QSslKey webServerKey;
 
-    // Set duration to 375 days. Give them a 10 day grace period.
-    certificateServer.createCertificate(webServerCertificate, 375, caIntermediateKey,
-            QSsl::sha512WithRSAEncryption, "US", "AZ", "Tucson", "SSL Test Server",
-            "SSL Test Server Web Services", "server.ssltestserver.org",
-            QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz,").toLatin1(),
-            "1234567890", "admin@ssltestserver.org", extensions, false, caCertificate, caKey);
-    certificateServer.saveCertificate(webServerCertificate, "server.ssltestserver.org.cert.pem");
+        certificateServer.createPrivateKey(webServerKey, 2048);
+        certificateServer.encryptKey(webServerKey, "server" + QByteArray::number(i) + ".ssltestserver.org.key.pem");
+
+        // Create client web server certificate
+        QSslCertificate *webServerCertificate(new QSslCertificate);
+
+        // Set duration to 375 days. Give them a 10 day grace period.
+        certificateServer.createCertificate(webServerCertificate, 375, caIntermediateKey,
+                QSsl::sha512WithRSAEncryption, "US", "AZ", "Tucson", "SSL Test Server",
+                "SSL Test Server Web Services", "server" + QByteArray::number(i) + ".ssltestserver.org",
+                QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz,").toLatin1(),
+                "1234567890", "admin@ssltestserver.org", extensions, false, caCertificate, caKey);
+        certificateServer.saveCertificate(webServerCertificate, "server" + QByteArray::number(i) + ".ssltestserver.org.cert.pem");
+    }
 
     // Create a Subject Alternative Name (SAN) server key
     QSslKey sanServerKey;
