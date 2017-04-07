@@ -251,7 +251,18 @@ void QSslCertificateRevocationListPrivate::crlFromPem(const QByteArray &pem)
 QByteArray QSslCertificateRevocationListPrivate::crlNumber()
 {
     if (m_crlNumber.isEmpty()) {
-        m_crlNumber = QByteArray::number(qlonglong(q_X509_CRL_get_ext_d2i(x509Crl, NID_crl_number, 0, 0)));
+        ASN1_INTEGER *crlAsn1Number
+                = reinterpret_cast<ASN1_INTEGER *>(q_X509_CRL_get_ext_d2i(x509Crl, NID_crl_number, 0, 0));
+
+        if(crlAsn1Number){
+            BIGNUM *crlBigNumber = q_ASN1_INTEGER_to_BN(crlAsn1Number, 0);
+            q_ASN1_STRING_free(crlAsn1Number);
+
+            m_crlNumber = q_BN_bn2dec(crlBigNumber);
+            q_BN_free(crlBigNumber);
+        }else{
+            m_crlNumber = "<None>";
+        }
     }
 
     return m_crlNumber;

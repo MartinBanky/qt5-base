@@ -461,12 +461,14 @@ X509_EXTENSION *q_X509_get_ext(X509 *a, int b);
 int q_X509_get_ext_count(X509 *a);
 void *q_X509_get_ext_d2i(X509 *a, int b, int *c, int *d);
 int q_ASN1_INTEGER_set(ASN1_INTEGER *a, long b);
+BIGNUM *q_ASN1_INTEGER_to_BN(const ASN1_INTEGER *a, BIGNUM *b);
 void q_ASN1_OBJECT_free(ASN1_OBJECT *a);
 void q_ASN1_STRING_free(ASN1_STRING *a);
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
 const unsigned char *q_ASN1_STRING_get0_data(const ASN1_STRING *a);
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 ASN1_STRING *q_ASN1_STRING_type_new(int a);
+char *q_BN_bn2dec(const BIGNUM *a);
 int q_BN_dec2bn(BIGNUM **a, const char *b);
 int q_BN_hex2bn(BIGNUM **a, char *b);
 void q_BN_free(BIGNUM *a);
