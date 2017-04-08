@@ -384,27 +384,21 @@ QByteArray QSslCertificateRevocationListPrivate::QByteArrayFromX509Crl(QSsl::Enc
         return QByteArray();
     }
 
+    qint32 size;
+    BIO *bio = q_BIO_new(q_BIO_s_mem());
+
     if (format == QSsl::Pem) {
-        BIO *bio = q_BIO_new(q_BIO_s_mem());
-
         q_PEM_write_bio_X509_CRL(bio, x509Crl);
-
-        qint32 size = q_i2d_X509_CRL(x509Crl, 0) * 2;
-        QByteArray x509CrlString(size, '0');
-
-        size = q_BIO_read(bio, x509CrlString.data(), size);
-
-        q_BIO_free(bio);
-
-        return x509CrlString.left(size);
+        size = static_cast<qint32>(q_BIO_number_written(bio));
     } else {
-        qint32 size = q_i2d_X509_CRL(x509Crl, 0);
-        QByteArray x509CrlString(size, '0');
-        auto *data = reinterpret_cast<unsigned char *>(x509CrlString.data());
-        size = q_i2d_X509_CRL(x509Crl, &data);
-
-        return x509CrlString.left(size);
+        size = q_i2d_X509_CRL_bio(bio, x509Crl);
     }
+
+    QByteArray x509CrlString(size, '0');
+    size = q_BIO_read(bio, x509CrlString.data(), size);
+    q_BIO_free(bio);
+
+    return x509CrlString.left(size);
 }
 
 /*!
@@ -421,18 +415,13 @@ QString QSslCertificateRevocationListPrivate::QStringFromX509Crl() const
 
     q_X509_CRL_print(bio, x509Crl);
 
-    qint32 size;
-    QByteArray x509CrlString;
-    QByteArray buffer(16384, 0);
+    qint32 size = static_cast<qint32>(q_BIO_number_written(bio));
+    QByteArray x509CrlString(size, 0);
 
-    do {
-        size = q_BIO_read(bio, buffer.data(), buffer.size());
-        x509CrlString.append(buffer.left(size));
-    } while (size > 0);
-
+    size = q_BIO_read(bio, x509CrlString.data(), size);
     q_BIO_free(bio);
 
-    return QString::fromLatin1(x509CrlString);
+    return QString::fromLatin1(x509CrlString.left(size));
 }
 
 /*!

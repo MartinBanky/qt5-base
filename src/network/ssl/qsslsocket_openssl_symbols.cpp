@@ -373,6 +373,7 @@ DEFINEFUNC(void, ASN1_STRING_free, ASN1_STRING *a, a, return, DUMMYARG)
 DEFINEFUNC(const unsigned char *, ASN1_STRING_get0_data, const ASN1_STRING *a, a, return 0, return)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(ASN1_STRING *, ASN1_STRING_type_new, int a, a, return 0, return)
+DEFINEFUNC(unsigned long, BIO_number_written, BIO *a, a, return 0, return)
 DEFINEFUNC(char *, BN_bn2dec, const BIGNUM *a, a, return 0, return)
 DEFINEFUNC2(int, BN_dec2bn, BIGNUM **a, a, const char *b, b, return 0, return)
 DEFINEFUNC2(int, BN_hex2bn, BIGNUM **a, a, char *b, b, return 0, return)
@@ -545,7 +546,7 @@ DEFINEFUNC(const EVP_CIPHER *, EVP_seed_cbc, DUMMYARG, DUMMYARG, return 0, retur
 DEFINEFUNC(const EVP_CIPHER *, EVP_seed_cfb128, DUMMYARG, DUMMYARG, return 0, return)
 DEFINEFUNC(const EVP_CIPHER *, EVP_seed_ofb, DUMMYARG, DUMMYARG, return 0, return)
 #endif // OPENSSL_NO_SEED
-DEFINEFUNC2(int, i2d_X509_CRL, X509_CRL *a, a, unsigned char **b, b, return -1, return)
+DEFINEFUNC2(int, i2d_X509_CRL_bio, BIO *a, a, X509_CRL *b, b, return -1, return)
 DEFINEFUNC2(int, PEM_write_bio_X509_CRL, BIO *a, a, X509_CRL *b, b, return 0, return)
 DEFINEFUNC2(int, PEM_write_X509_CRL, FILE *a, a, X509_CRL *b, b, return 0, return)
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
@@ -1233,6 +1234,7 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(ASN1_STRING_get0_data)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
     RESOLVEFUNC(ASN1_STRING_type_new)
+    RESOLVEFUNC(BIO_number_written)
     RESOLVEFUNC(BN_bn2dec)
     RESOLVEFUNC(BN_dec2bn)
     RESOLVEFUNC(BN_hex2bn)
@@ -1407,7 +1409,7 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(EVP_seed_cfb128)
     RESOLVEFUNC(EVP_seed_ofb)
 #endif // OPENSSL_NO_SEED
-    RESOLVEFUNC(i2d_X509_CRL)
+    RESOLVEFUNC(i2d_X509_CRL_bio)
     RESOLVEFUNC(PEM_write_bio_X509_CRL)
     RESOLVEFUNC(PEM_write_X509_CRL)
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL

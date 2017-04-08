@@ -468,6 +468,7 @@ void q_ASN1_STRING_free(ASN1_STRING *a);
 const unsigned char *q_ASN1_STRING_get0_data(const ASN1_STRING *a);
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 ASN1_STRING *q_ASN1_STRING_type_new(int a);
+unsigned long q_BIO_number_written(BIO *a);
 char *q_BN_bn2dec(const BIGNUM *a);
 int q_BN_dec2bn(BIGNUM **a, const char *b);
 int q_BN_hex2bn(BIGNUM **a, char *b);
@@ -775,7 +776,7 @@ inline const EVP_CIPHER *q_EVP_seed_cbc(){return 0;}
 inline const EVP_CIPHER *q_EVP_seed_cfb128(){return 0;}
 inline const EVP_CIPHER *q_EVP_seed_ofb(){return 0;}
 #endif // OPENSSL_NO_SEED
-int q_i2d_X509_CRL(X509_CRL *a, unsigned char **b);
+int q_i2d_X509_CRL_bio(BIO *a, X509_CRL *b);
 int q_PEM_write_bio_X509_CRL(BIO *a, X509_CRL *b);
 int q_PEM_write_X509_CRL(FILE *a, X509_CRL *b);
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
