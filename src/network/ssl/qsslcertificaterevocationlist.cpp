@@ -221,14 +221,15 @@ bool QSslCertificateRevocationList::operator==(const QSslCertificateRevocationLi
 
 /*!
     Add additional certificates from \a revocationCertificates
-    to an existing certificate revocation list
+    to an existing certificate revocation list. Pass a QSslError
+    object to check for errors.
  */
-QSslError::SslError QSslCertificateRevocationList::addRevokedCertificates(
-        const QList<QSslCertificate> &certificatesToRevoke) const
+void QSslCertificateRevocationList::addRevokedCertificates(
+        const QList<QSslCertificate> &certificatesToRevoke, QSslError *sslError) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
-    return d->addRevokedCertificates(certificatesToRevoke);
+    d->addRevokedCertificates(certificatesToRevoke, sslError);
 }
 
 /*!
@@ -269,7 +270,8 @@ QList<QSslCertificateExtension> QSslCertificateRevocationList::extensions() cons
 /*!
     Generates the new certificate revocation list with revoked certificates
     from \a revocationCertificates. Call this after calling, at a minimum,
-    setCertificateAuthority() and setCrlNumber().
+    setCertificateAuthority() and setCrlNumber(). Pass a QSslError
+    object to check for errors.
 
     \note You can only sign certificate revocation lists with either
     RSA or DSA keys. Also, make sure you choose the right signature
@@ -277,12 +279,12 @@ QList<QSslCertificateExtension> QSslCertificateRevocationList::extensions() cons
     DSA key you can only choose dsaWithSHA1. RSA can use the rest,
     but not dsaWithSHA1.
  */
-QSslError::SslError QSslCertificateRevocationList::generateCertificateRevocationList(
-        const QList<QSslCertificate> &certificatesToRevoke) const
+void QSslCertificateRevocationList::generateCertificateRevocationList(
+        const QList<QSslCertificate> &certificatesToRevoke, QSslError *sslError) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
-    return d->generateCertificateRevocationList(certificatesToRevoke);
+    d->generateCertificateRevocationList(certificatesToRevoke, sslError);
 }
 
 /*!
@@ -366,26 +368,28 @@ QDateTime QSslCertificateRevocationList::nextUpdate() const
 
 /*!
     Removes revoked certificates with a revocation date before
-    \a dateTime from the certificate revocation list.
+    \a dateTime from the certificate revocation list. Pass a
+    QSslError object to check for errors.
  */
-QSslError::SslError QSslCertificateRevocationList::removeRevokedCertificates(
-        const QDateTime &dateTime) const
+void QSslCertificateRevocationList::removeRevokedCertificates(
+        const QDateTime &dateTime, QSslError *sslError) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
-    return d->removeRevokedCertificates(dateTime);
+    d->removeRevokedCertificates(dateTime, sslError);
 }
 
 /*!
-    Removes revoked certificates by serial number
-    from the certificate revocation list.
+    Removes revoked certificates by serial number from the
+    certificate revocation list. Pass a QSslError object
+    to check for errors.
  */
-QSslError::SslError QSslCertificateRevocationList::removeRevokedCertificates(
-        const QList<QSslRevokedCertificate> &certificatesToRemove) const
+void QSslCertificateRevocationList::removeRevokedCertificates(
+        const QList<QSslRevokedCertificate> &certificatesToRemove, QSslError *sslError) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
-    return d->removeRevokedCertificates(certificatesToRemove);
+    d->removeRevokedCertificates(certificatesToRemove, sslError);
 }
 
 /*!
@@ -496,14 +500,14 @@ QString QSslCertificateRevocationList::toText() const
 
 /*!
     Verifies a certificate revocation list. The CA chain to be verified with is passed in the
-    \a caCertificates parameter.
+    \a caCertificates parameter. Pass a QSslError object to check for errors.
  */
-QSslError::SslError QSslCertificateRevocationList::verify(
-        const QList<QSslCertificate> &caCertificates) const
+void QSslCertificateRevocationList::verify(
+        const QList<QSslCertificate> &caCertificates, QSslError *sslError) const
 {
     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
 
-    return d->verify(caCertificates);
+    d->verify(caCertificates, sslError);
 }
 
 /*!

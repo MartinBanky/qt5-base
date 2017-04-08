@@ -79,11 +79,14 @@ public:
     inline bool operator!=(const QSslCertificateRevocationList &other) const
     { return !operator==(other); }
 
-    QSslError::SslError addRevokedCertificates(const QList<QSslCertificate> &certificatesToRevoke) const;
-    QSslError::SslError generateCertificateRevocationList(const QList<QSslCertificate> &certificatesToRevoke) const;
-    QSslError::SslError removeRevokedCertificates(const QDateTime &dateTime) const;
-    QSslError::SslError removeRevokedCertificates(const QList<QSslRevokedCertificate> &certificatesToRemove) const;
-    QSslError::SslError verify(const QList<QSslCertificate> &caCertificates) const;
+    void addRevokedCertificates(const QList<QSslCertificate> &certificatesToRevoke,
+            QSslError *sslError = Q_NULLPTR) const;
+    void generateCertificateRevocationList(const QList<QSslCertificate> &certificatesToRevoke,
+            QSslError *sslError = Q_NULLPTR) const;
+    void removeRevokedCertificates(const QDateTime &dateTime, QSslError *sslError = Q_NULLPTR) const;
+    void removeRevokedCertificates(const QList<QSslRevokedCertificate> &certificatesToRemove,
+            QSslError *sslError = Q_NULLPTR) const;
+    void verify(const QList<QSslCertificate> &caCertificates, QSslError *sslError = Q_NULLPTR) const;
 
     Qt::HANDLE handle() const;
     bool isNull() const;

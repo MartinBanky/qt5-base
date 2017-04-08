@@ -116,11 +116,14 @@ public:
 
     QAtomicInt ref;
 
-    QSslError::SslError addRevokedCertificates(const QList<QSslCertificate> &certificatesToRevoke);
-    QSslError::SslError generateCertificateRevocationList(const QList<QSslCertificate> &certificatesToRevoke);
-    QSslError::SslError removeRevokedCertificates(const QDateTime &dateTime);
-    QSslError::SslError removeRevokedCertificates(const QList<QSslRevokedCertificate> &certificatesToRemove);
-    QSslError::SslError verify(const QList<QSslCertificate> &caCertificates);
+    void addRevokedCertificates(const QList<QSslCertificate> &certificatesToRevoke,
+            QSslError *sslError = Q_NULLPTR);
+    void generateCertificateRevocationList(const QList<QSslCertificate> &certificatesToRevoke,
+            QSslError *sslError = Q_NULLPTR);
+    void removeRevokedCertificates(const QDateTime &dateTime, QSslError *sslError = Q_NULLPTR);
+    void removeRevokedCertificates(const QList<QSslRevokedCertificate> &certificatesToRemove,
+            QSslError *sslError = Q_NULLPTR);
+    void verify(const QList<QSslCertificate> &caCertificates, QSslError *sslError = Q_NULLPTR);
 
     Qt::HANDLE handle() const;
 
@@ -151,8 +154,8 @@ public:
     qint8 addExtension(X509 *signer, X509_CRL *crl, qint32 nid, QByteArray value) const;
     QString QStringFromX509Crl() const;
 
-    QSslError::SslError checkForErrors() const;
-    QSslError::SslError signCrl();
+    void checkForErrors(QSslError *sslError = Q_NULLPTR) const;
+    void signCrl(QSslError *sslError = Q_NULLPTR);
 
 private:
 };

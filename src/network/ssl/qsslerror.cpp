@@ -327,6 +327,14 @@ QSslCertificate QSslError::certificate() const
 }
 
 /*!
+    \internal
+ */
+void QSslError::setError(QSslError::SslError sslError)
+{
+    d->error = sslError;
+}
+
+/*!
     Returns the hash value for the \a key, using \a seed to seed the calculation.
     \since 5.4
     \relates QHash

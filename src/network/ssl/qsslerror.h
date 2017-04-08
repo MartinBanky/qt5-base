@@ -123,6 +123,10 @@ public:
 
 private:
     QScopedPointer<QSslErrorPrivate> d;
+
+    void setError(QSslError::SslError sslError);
+
+    friend class QSslCertificateRevocationListPrivate;
 };
 Q_DECLARE_SHARED(QSslError)
 
