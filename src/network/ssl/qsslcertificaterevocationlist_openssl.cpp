@@ -55,14 +55,14 @@
 #include "qsslrevokedcertificate_p.h"
 #include "qsslsocket_openssl_symbols_p.h"
 #include "qsslcertificaterevocationlist_p.h"
-#else
+#endif
+
 #include <QtNetwork/private/qssl_p.h>
 #include <QtNetwork/private/qsslkey_p.h>
 #include <QtNetwork/private/qsslcertificate_p.h>
 #include <QtNetwork/private/qsslrevokedcertificate_p.h>
 #include <QtNetwork/private/qsslsocket_openssl_symbols_p.h>
 #include <QtNetwork/private/qsslcertificaterevocationlist_p.h>
-#endif
 
 QT_BEGIN_NAMESPACE
 
@@ -76,7 +76,7 @@ QSslError::SslError QSslCertificateRevocationListPrivate::addRevokedCertificates
         return QSslError::UnableToGetRevocationList;
     }
 
-    QSslError::SslError sslError = checkForErrors();
+    const QSslError::SslError sslError = checkForErrors();
 
     if (sslError) {
         return sslError;
@@ -84,8 +84,8 @@ QSslError::SslError QSslCertificateRevocationListPrivate::addRevokedCertificates
 
     setTimes();
 
-    qint32 revokedCertificatesSize = m_revokedCertificates.size();
-    qint32 revocationCertificatesSize = certificatesToRevoke.size();
+    const qint32 revokedCertificatesSize = m_revokedCertificates.size();
+    const qint32 revocationCertificatesSize = certificatesToRevoke.size();
 
     QByteArray addToCrl(revocationCertificatesSize, 1);
 
@@ -206,10 +206,10 @@ QSslError::SslError QSslCertificateRevocationListPrivate::checkForErrors() const
  */
 void QSslCertificateRevocationListPrivate::crlFromDer(const QByteArray &der)
 {
-    qint32 size = der.size();
+    const qint32 size = der.size();
 
     if (size) {
-        auto *data(reinterpret_cast<const unsigned char *>(der.constData()));
+        auto *data = reinterpret_cast<const unsigned char *>(der.constData());
 
         x509Crl = q_d2i_X509_CRL(0, &data, size);
 
@@ -232,7 +232,7 @@ void QSslCertificateRevocationListPrivate::crlFromPem(const QByteArray &pem)
     if (begin.indexIn(text) && end.indexIn(text)) {
         text = text.simplified();
 
-        qint32 beginSize = begin.pattern().size();
+        const qint32 beginSize = begin.pattern().size();
 
         text = QByteArray::fromBase64(text.mid(begin.indexIn(text) + beginSize,
                 end.indexIn(text) - beginSize));
@@ -326,10 +326,10 @@ QMap<QByteArray, QString> QSslCertificateRevocationListPrivate::issuerInfo() con
     QMap<QByteArray, QString> info;
 
     X509_NAME_ENTRY *nameEntry;
-    X509_NAME *x509Name(q_X509_CRL_get_issuer(x509Crl));
+    X509_NAME *x509Name = q_X509_CRL_get_issuer(x509Crl);
 
     qint32 entrySize;
-    qint32 count(q_X509_NAME_entry_count(x509Name));
+    const qint32 count = q_X509_NAME_entry_count(x509Name);
 
     for (qint32 i = 0; i < count; ++i) {
         nameEntry = q_X509_NAME_get_entry(x509Name, i);
@@ -454,8 +454,8 @@ QSslError::SslError QSslCertificateRevocationListPrivate::removeRevokedCertifica
     setStartOfCrl();
     setTimes();
 
-    QList<QSslRevokedCertificate> revokedCertificates = m_revokedCertificates;
-    qint32 revokedCertificatesSize = revokedCertificates.size();
+    const QList<QSslRevokedCertificate> revokedCertificates = m_revokedCertificates;
+    const qint32 revokedCertificatesSize = revokedCertificates.size();
     QByteArray addToCrl(revokedCertificatesSize, 1);
 
     m_revokedCertificates.clear();
@@ -481,7 +481,7 @@ QSslError::SslError QSslCertificateRevocationListPrivate::removeRevokedCertifica
         return QSslError::UnableToGetRevocationList;
     }
 
-    QSslError::SslError sslError = checkForErrors();
+    const QSslError::SslError sslError = checkForErrors();
 
     if (sslError) {
         return sslError;
@@ -490,9 +490,9 @@ QSslError::SslError QSslCertificateRevocationListPrivate::removeRevokedCertifica
     setStartOfCrl();
     setTimes();
 
-    QList<QSslRevokedCertificate> revokedCertificates = m_revokedCertificates;
-    qint32 revokedCertificatesSize = revokedCertificates.size();
-    qint32 removedCertificatesSize = certificatesToRemove.size();
+    const QList<QSslRevokedCertificate> revokedCertificates = m_revokedCertificates;
+    const qint32 revokedCertificatesSize = revokedCertificates.size();
+    const qint32 removedCertificatesSize = certificatesToRemove.size();
     QByteArray addToCrl(removedCertificatesSize, 1);
 
     m_revokedCertificates.clear();
@@ -625,7 +625,7 @@ void QSslCertificateRevocationListPrivate::setStartOfCrl()
  */
 void QSslCertificateRevocationListPrivate::setTimes()
 {
-    ASN1_TIME *time(static_cast<ASN1_TIME *>(q_ASN1_STRING_type_new(V_ASN1_UTCTIME)));
+    ASN1_TIME *time = static_cast<ASN1_TIME *>(q_ASN1_STRING_type_new(V_ASN1_UTCTIME));
 
     q_X509_gmtime_adj(time, 0);
     m_lastUpdate = QDateTime::currentDateTime().toUTC();
@@ -647,10 +647,10 @@ QByteArray QSslCertificateRevocationListPrivate::signature() const
             static_cast<ASN1_BIT_STRING *>(q_ASN1_STRING_type_new(V_ASN1_BIT_STRING)));
     q_X509_CRL_get0_signature(x509Crl, &x509Signature, 0);
 
-    qint32 length = q_ASN1_STRING_length(x509Signature);
+    const qint32 length = q_ASN1_STRING_length(x509Signature);
     const unsigned char *sig = q_ASN1_STRING_get0_data(signature);
 
-    QByteArray signature = reinterpret_cast<const signed char *>(sig), length;
+    QByteArray signature(reinterpret_cast<const char *>(sig), length);
 
     q_ASN1_STRING_free(static_cast<ASN1_BIT_STRING *>(x509Signature));
 
@@ -667,11 +667,11 @@ QByteArray QSslCertificateRevocationListPrivate::signature() const
 QSsl::SignatureAlgorithm QSslCertificateRevocationListPrivate::signatureAlgorithm()
 {
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-    qint32 nid = q_X509_CRL_get_signature_nid(x509Crl);
+    const qint32 nid = q_X509_CRL_get_signature_nid(x509Crl);
 #else
     ASN1_OBJECT *aoid;
     q_X509_ALGOR_get0(&aoid, 0, 0, x509Crl->sig_alg);
-    qint32 nid = OBJ_obj2nid(aoid);
+    const qint32 nid = OBJ_obj2nid(aoid);
     q_ASN1_OBJECT_free(aoid);
 #endif //  OPENSSL_VERSION_NUMBER >= 0x1010000fL
 
@@ -721,7 +721,7 @@ QSslError::SslError QSslCertificateRevocationListPrivate::signCrl()
     }
 
     EVP_MD_CTX mctx;
-    EVP_PKEY_CTX *pkctx(0);
+    EVP_PKEY_CTX *pkctx = 0;
 
     q_EVP_MD_CTX_init(&mctx);
     q_EVP_DigestSignInit(&mctx, &pkctx, digest, 0, certificateAuthorityKey.d->pKey);
@@ -781,15 +781,15 @@ QSslError::SslError QSslCertificateRevocationListPrivate::verify(
         return QSslError::UnableToGetIssuerCertificate;
     }
 
-    X509_STORE *certStore(q_X509_STORE_new());
+    X509_STORE *certStore = q_X509_STORE_new();
 
     if (Q_UNLIKELY(!certStore)) {
         qCWarning(lcSsl) << "Unable to create certificate store";
         return QSslError::UnspecifiedError;
     }
 
-    bool emptyCertStore(true);
-    const QDateTime now(QDateTime::currentDateTimeUtc());
+    bool emptyCertStore = true;
+    const auto now = QDateTime::currentDateTimeUtc();
 
     for (const QSslCertificate &caCertificate : caCertificates) {
         // From https://www.openssl.org/docs/ssl/SSL_CTX_load_verify_locations.html:
@@ -814,7 +814,7 @@ QSslError::SslError QSslCertificateRevocationListPrivate::verify(
         return QSslError::UnableToGetIssuerCertificate;
     }
 
-    X509_STORE_CTX *storeContext(q_X509_STORE_CTX_new());
+    X509_STORE_CTX *storeContext = q_X509_STORE_CTX_new();
 
     if (!storeContext) {
         q_X509_STORE_free(certStore);
@@ -827,19 +827,19 @@ QSslError::SslError QSslCertificateRevocationListPrivate::verify(
         return QSslError::UnspecifiedError;
     }
 
-    X509_OBJECT x509Objext;
+    X509_OBJECT x509Object;
     qint32 i = q_X509_STORE_get_by_subject(storeContext, X509_LU_X509,
-            q_X509_CRL_get_issuer(x509Crl), &x509Objext);
+            q_X509_CRL_get_issuer(x509Crl), &x509Object);
 
     if (i <= 0) {
         q_X509_STORE_CTX_free(storeContext);
         q_X509_STORE_free(certStore);
-        q_X509_OBJECT_free_contents(&x509Objext);
+        q_X509_OBJECT_free_contents(&x509Object);
         return QSslError::UnableToGetIssuerCertificate;
     }
 
-    EVP_PKEY *pkey = q_X509_get_pubkey(x509Objext.data.x509);
-    q_X509_OBJECT_free_contents(&x509Objext);
+    EVP_PKEY *pkey = q_X509_get_pubkey(x509Object.data.x509);
+    q_X509_OBJECT_free_contents(&x509Object);
 
     if (!pkey) {
         q_X509_STORE_CTX_free(storeContext);
@@ -860,11 +860,7 @@ QSslError::SslError QSslCertificateRevocationListPrivate::verify(
     q_X509_STORE_free(certStore);
     q_X509_STORE_CTX_free(storeContext);
 
-    if (i == 0) {
-        valid = false;
-    } else {
-        valid = true;
-    }
+    i == 0 ? valid = false : valid = true;
 
     return QSslError::NoError;
 }
