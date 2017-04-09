@@ -381,10 +381,12 @@ DEFINEFUNC2(ASN1_INTEGER *, BN_to_ASN1_INTEGER, BIGNUM *a, a, ASN1_INTEGER *b, b
 DEFINEFUNC3(X509_CRL *, d2i_X509_CRL, X509_CRL **a, a, const unsigned char **b, b, long c, c, return 0, return)
 DEFINEFUNC(int, DSA_generate_key, DSA *a, a, return 0, return)
 DEFINEFUNC7(int, DSA_generate_parameters_ex, DSA *a, a, int b, b, const unsigned char *c, c, int d, d, int *e, e, unsigned long *f, f, BN_GENCB *g, g, return 0, return)
+#ifndef OPENSSL_NO_EC
 DEFINEFUNC(EC_GROUP *, EC_GROUP_new, const EC_METHOD *a, a, return 0, return)
 DEFINEFUNC(int, EC_KEY_generate_key, EC_KEY *a, a, return 0, return)
 DEFINEFUNC(const EC_METHOD *, EC_GFp_mont_method, DUMMYARG, DUMMYARG, return 0, return)
 DEFINEFUNC(EC_KEY *, EC_KEY_new, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_EC
 DEFINEFUNC5(int, EVP_DigestSignInit, EVP_MD_CTX *a, a, EVP_PKEY_CTX **b, b, const EVP_MD *c, c, ENGINE *d, d, EVP_PKEY *e, e, return 0, return)
 DEFINEFUNC(void, EVP_MD_CTX_init, EVP_MD_CTX *a, a, return 0, return)
 #ifndef OPENSSL_NO_MD2
@@ -1227,10 +1229,12 @@ bool q_resolveOpenSslSymbols()
     RESOLVEFUNC(d2i_X509_CRL)
     RESOLVEFUNC(DSA_generate_key)
     RESOLVEFUNC(DSA_generate_parameters_ex)
+#ifndef OPENSSL_NO_EC
     RESOLVEFUNC(EC_GROUP_new)
     RESOLVEFUNC(EC_KEY_generate_key)
     RESOLVEFUNC(EC_GFp_mont_method)
     RESOLVEFUNC(EC_KEY_new)
+#endif // OPENSSL_NO_EC
     RESOLVEFUNC(EVP_DigestSignInit)
     RESOLVEFUNC(EVP_MD_CTX_cleanup)
     RESOLVEFUNC(EVP_MD_CTX_init)
