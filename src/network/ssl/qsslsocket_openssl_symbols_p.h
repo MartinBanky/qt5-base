@@ -476,10 +476,12 @@ ASN1_INTEGER *q_BN_to_ASN1_INTEGER(BIGNUM *a, ASN1_INTEGER *b);
 X509_CRL *q_d2i_X509_CRL(X509_CRL **a, const unsigned char **b, long c);
 int q_DSA_generate_key(DSA *a);
 int q_DSA_generate_parameters_ex(DSA *a, int b, const unsigned char *c, int d, int *e, unsigned long *f, BN_GENCB *g);
+#ifndef OPENSSL_NO_EC
 EC_GROUP *q_EC_GROUP_new(const EC_METHOD *a);
 int q_EC_KEY_generate_key(EC_KEY *a);
 const EC_METHOD *q_EC_GFp_mont_method();
 EC_KEY *q_EC_KEY_new();
+#endif // OPENSSL_NO_EC
 int q_EVP_DigestSignInit(EVP_MD_CTX *a, EVP_PKEY_CTX **b, const EVP_MD *c, ENGINE *d, EVP_PKEY *e);
 int q_EVP_MD_CTX_cleanup(EVP_MD_CTX *a);
 void q_EVP_MD_CTX_init(EVP_MD_CTX *a);
