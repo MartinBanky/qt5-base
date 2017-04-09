@@ -247,6 +247,18 @@ bool QSslCertificateExtension::isSupported() const
 
     \snippet code/src_network_ssl_qsslcertificateextension.cpp 2
 
+    To set the X509v3 Subject Key Identifier, which is defined as:
+
+    \snippet code/src_network_ssl_qsslcertificateextension.cpp 3
+
+    You would just do:
+
+    \snippet code/src_network_ssl_qsslcertificateextension.cpp 4
+
+    Which would generate:
+
+    \snippet code/src_network_ssl_qsslcertificateextension.cpp 5
+
     To find more NID definitions, get a copy of the OpenSSL
     source code, and look at crypto/objects/obj_mac.h.
  */
@@ -259,7 +271,7 @@ void QSslCertificateExtension::setNid(qint32 nid)
     Sets the value of the extension. Takes the same values as
     what an openssl.cnf file would take.
  */
-void QSslCertificateExtension::setNidValue(const QByteArray nidValue)
+void QSslCertificateExtension::setNidValue(const QByteArray &nidValue)
 {
     d->nidValue = nidValue;
 }

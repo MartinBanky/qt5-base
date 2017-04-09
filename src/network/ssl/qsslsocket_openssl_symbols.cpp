@@ -369,7 +369,7 @@ DEFINEFUNC2(int, ASN1_INTEGER_set, ASN1_INTEGER *a, a, long b, b, return 0, retu
 DEFINEFUNC(void, ASN1_OBJECT_free, ASN1_OBJECT *a, a, return, DUMMYARG)
 DEFINEFUNC(void, ASN1_STRING_free, ASN1_STRING *a, a, return, DUMMYARG)
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-DEFINEFUNC(const unsigned char *, ASN1_STRING_get0_data, const ASN1_STRING *a, a, return 0, return);
+DEFINEFUNC(const unsigned char *, ASN1_STRING_get0_data, const ASN1_STRING *a, a, return 0, return)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(ASN1_STRING *, ASN1_STRING_type_new, int a, a, return 0, return)
 DEFINEFUNC2(int, BN_dec2bn, BIGNUM **a, a, const char *b, b, return 0, return)
@@ -384,10 +384,12 @@ DEFINEFUNC(int, DSA_bits, DSA *a, a, return 0, return)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(int, DSA_generate_key, DSA *a, a, return 0, return)
 DEFINEFUNC7(int, DSA_generate_parameters_ex, DSA *a, a, int b, b, const unsigned char *c, c, int d, d, int *e, e, unsigned long *f, f, BN_GENCB *g, g, return 0, return)
+#ifndef OPENSSL_NO_EC
 DEFINEFUNC(EC_GROUP *, EC_GROUP_new, const EC_METHOD *a, a, return 0, return)
 DEFINEFUNC(int, EC_KEY_generate_key, EC_KEY *a, a, return 0, return)
 DEFINEFUNC(const EC_METHOD *, EC_GFp_mont_method, DUMMYARG, DUMMYARG, return 0, return)
 DEFINEFUNC(EC_KEY *, EC_KEY_new, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_EC
 DEFINEFUNC5(int, EVP_DigestSignInit, EVP_MD_CTX *a, a, EVP_PKEY_CTX **b, b, const EVP_MD *c, c, ENGINE *d, d, EVP_PKEY *e, e, return 0, return)
 DEFINEFUNC(void, EVP_MD_CTX_init, EVP_MD_CTX *a, a, return 0, return)
 #ifndef OPENSSL_NO_MD2
@@ -543,9 +545,9 @@ DEFINEFUNC(const EVP_CIPHER *, EVP_seed_cbc, DUMMYARG, DUMMYARG, return 0, retur
 DEFINEFUNC(const EVP_CIPHER *, EVP_seed_cfb128, DUMMYARG, DUMMYARG, return 0, return)
 DEFINEFUNC(const EVP_CIPHER *, EVP_seed_ofb, DUMMYARG, DUMMYARG, return 0, return)
 #endif // OPENSSL_NO_SEED
-DEFINEFUNC2(int, i2d_X509_CRL, X509_CRL *a, a, unsigned char **b, b, return -1, return);
+DEFINEFUNC2(int, i2d_X509_CRL, X509_CRL *a, a, unsigned char **b, b, return -1, return)
 DEFINEFUNC2(int, PEM_write_bio_X509_CRL, BIO *a, a, X509_CRL *b, b, return 0, return)
-DEFINEFUNC2(int, PEM_write_X509_CRL, FILE *a, a, X509_CRL *b, b, return 0, return);
+DEFINEFUNC2(int, PEM_write_X509_CRL, FILE *a, a, X509_CRL *b, b, return 0, return)
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(int, RSA_bits, RSA *a, a, return 0, return)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
@@ -562,13 +564,13 @@ DEFINEFUNC2(int, X509_CRL_add0_revoked, X509_CRL *a, a, X509_REVOKED *b, b, retu
 DEFINEFUNC(X509_CRL *, X509_CRL_dup, X509_CRL *a, a, return 0, return)
 DEFINEFUNC2(X509_EXTENSION *, X509_CRL_get_ext, X509_CRL *a, a, int b, b, return 0, return)
 DEFINEFUNC(int, X509_CRL_get_ext_count, X509_CRL *a, a, return -1, return)
-DEFINEFUNC4(void *, X509_CRL_get_ext_d2i, X509_CRL *a, a, int b, b, int *c, c, int *d, d, return 0, return);
+DEFINEFUNC4(void *, X509_CRL_get_ext_d2i, X509_CRL *a, a, int b, b, int *c, c, int *d, d, return 0, return)
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(X509_NAME *, X509_CRL_get_issuer, const X509_CRL *a, a, return 0, return)
 DEFINEFUNC(const ASN1_TIME *, X509_CRL_get0_lastUpdate, const X509_CRL *a, a, return 0, return)
 DEFINEFUNC(const ASN1_TIME *, X509_CRL_get0_nextUpdate, const X509_CRL *a, a, return 0, return)
 DEFINEFUNC(STACK_OF(X509_REVOKED) *, X509_CRL_get_REVOKED, X509_CRL *a, a, return 0, return)
-DEFINEFUNC3(void, X509_CRL_get0_signature, const X509_CRL *a, a, const ASN1_BIT_STRING **b, b, const X509_ALGOR **c, c, return, DUMMYARG);
+DEFINEFUNC3(void, X509_CRL_get0_signature, const X509_CRL *a, a, const ASN1_BIT_STRING **b, b, const X509_ALGOR **c, c, return, DUMMYARG)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC2(int, X509_CRL_match, const X509_CRL *a, a, const X509_CRL *b, b, return -1, return)
 DEFINEFUNC(X509_CRL *, X509_CRL_new, DUMMYARG, DUMMYARG, return 0, return)
@@ -589,7 +591,7 @@ DEFINEFUNC(EVP_PKEY *, X509_get_pubkey, X509 *a, a, return 0, return)
 DEFINEFUNC(int, X509_get_signature_nid, const X509 *a, a, return 0, return)
 DEFINEFUNC2(ASN1_TIME *, X509_gmtime_adj, ASN1_TIME *a, a, long b, b, return -1, return)
 DEFINEFUNC7(int, X509_NAME_add_entry_by_txt, X509_NAME *a, a, const char *b, b, int c, c, const unsigned char *d, d, int e, e, int f, f, int g, g, return 0, return)
-DEFINEFUNC(void, X509_NAME_free, X509_NAME *a, a, return, DUMMYARG);
+DEFINEFUNC(void, X509_NAME_free, X509_NAME *a, a, return, DUMMYARG)
 DEFINEFUNC(X509 *, X509_new, DUMMYARG, DUMMYARG, return -1, return)
 DEFINEFUNC(void, X509_OBJECT_free_contents, X509_OBJECT *a, a, return, DUMMYARG)
 DEFINEFUNC(X509_REVOKED *, X509_REVOKED_new, DUMMYARG, DUMMYARG, return 0, return)
