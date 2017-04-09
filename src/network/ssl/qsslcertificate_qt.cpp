@@ -188,10 +188,238 @@ QByteArray QSslCertificate::toDer() const
     return d->derData;
 }
 
+//#define ASN1_INTEGER int
+//#define EVP_PKEY int
+//#define BIO_write
+//#define BIO_printf
+//#define X509_ALGOR int
+//#define ASN1_BIT_STRING QString
+//#define X509_PUBKEY QSslKey
+//#define i2a_ASN1_OBJECT
+//#define X509_get0_tbs_sigalg(x) *int x
+//#define X509_FLAG_NO_PUBKEY 0
+
 QString QSslCertificate::toText() const
 {
-    Q_UNIMPLEMENTED();
-    return QString();
+//    int *bp;
+//    X509 *x;
+//    unsigned long nmflags = 0;
+//    unsigned long cflag = 0;
+
+
+//    long l;
+//    int ret = 0, i;
+//    char *m = NULL, mlch = ' ';
+//    int nmindent = 16;
+//    ASN1_INTEGER *bs;
+//    EVP_PKEY *pkey = NULL;
+//    const char *neg;
+
+//    // Signature algorithm
+//    const X509_ALGOR *tsig_alg = X509_get0_tbs_sigalg(x);
+
+//    if (!(cflag & X509_FLAG_NO_PUBKEY)) {
+//        X509_PUBKEY *xpkey = X509_get_X509_PUBKEY(x);
+//        ASN1_OBJECT *xpoid;
+//        X509_PUBKEY_get0_param(&xpoid, NULL, NULL, NULL, xpkey);
+//        if (BIO_write(bp, "        Subject Public Key Info:\n", 33) <= 0)
+//            goto err;
+//        if (BIO_printf(bp, "%12sPublic Key Algorithm: ", "") <= 0)
+//            goto err;
+//        if (i2a_ASN1_OBJECT(bp, xpoid) <= 0)
+//            goto err;
+//        if (BIO_puts(bp, "\n") <= 0)
+//            goto err;
+
+//        pkey = X509_get0_pubkey(x);
+//        if (pkey == NULL) {
+//            BIO_printf(bp, "%12sUnable to load Public Key\n", "");
+//            ERR_print_errors(bp);
+//        } else {
+//            EVP_PKEY_print_public(bp, pkey, 16, NULL);
+//        }
+//    }
+
+//    if (!(cflag & X509_FLAG_NO_IDS)) {
+//        const ASN1_BIT_STRING *iuid, *suid;
+//        X509_get0_uids(x, &iuid, &suid);
+//        if (iuid != NULL) {
+//            if (BIO_printf(bp, "%8sIssuer Unique ID: ", "") <= 0)
+//                goto err;
+//            if (!X509_signature_dump(bp, iuid, 12))
+//                goto err;
+//        }
+//        if (suid != NULL) {
+//            if (BIO_printf(bp, "%8sSubject Unique ID: ", "") <= 0)
+//                goto err;
+//            if (!X509_signature_dump(bp, suid, 12))
+//                goto err;
+//        }
+//    }
+
+//    if (!(cflag & X509_FLAG_NO_EXTENSIONS))
+//        X509V3_extensions_print(bp, "X509v3 extensions",
+//                                X509_get0_extensions(x), cflag, 8);
+
+//    if (!(cflag & X509_FLAG_NO_SIGDUMP)) {
+//        const X509_ALGOR *sig_alg;
+//        const ASN1_BIT_STRING *sig;
+//        X509_get0_signature(&sig, &sig_alg, x);
+//        if (X509_signature_print(bp, sig_alg, sig) <= 0)
+//            goto err;
+//    }
+
+//    if (!(cflag & X509_FLAG_NO_AUX)) {
+//        if (!X509_aux_print(bp, x, 0))
+//            goto err;
+//    }
+
+//err:
+
+
+    QString cetificateText = "Certificate:\n    Data:\n        Version: ";
+
+    cetificateText.append(d->versionString);
+    cetificateText.append("        Serial Number: " + d->serialNumberString);
+    cetificateText.append("    Signature Algorithm: " + QByteArray("Unknown"));
+    cetificateText.append("        Issuer: ");
+
+    QStringList info = issuerInfo(QSslCertificate::CountryName);
+
+    if (!info.isEmpty())
+        cetificateText.append("C = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::StateOrProvinceName);
+
+    if (!info.isEmpty())
+        cetificateText.append("ST = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::LocalityName);
+
+    if (!info.isEmpty())
+        cetificateText.append("L = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::Organization);
+
+    if (!info.isEmpty())
+        cetificateText.append("O = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::OrganizationalUnitName);
+
+    if (!info.isEmpty())
+        cetificateText.append("OU = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::CommonName);
+
+    if (!info.isEmpty())
+        cetificateText.append("CN = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::EmailAddress);
+
+    if (!info.isEmpty())
+        cetificateText.append("emailAddress = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::DistinguishedNameQualifier);
+
+    if (!info.isEmpty())
+        cetificateText.append("dnQualifier = " + info.at(0) + ", ");
+
+    info = issuerInfo(QSslCertificate::SerialNumber);
+
+    if (!info.isEmpty())
+        cetificateText.append("serialNumber = " + info.at(0) + ", ");
+
+    cetificateText.chop(2);
+    cetificateText.append("\n        Validity\n            Not Before: ");
+
+    if (d->notValidBefore.isValid())
+        cetificateText.append(d->notValidBefore.toUTC().toString("MMM d HH:mm:ss yyyy") + " GMT\n");
+    else
+        cetificateText.append("Unknown\n");
+
+    cetificateText.append("            Not After : ");
+
+    if (d->notValidAfter.isValid())
+        cetificateText.append(d->notValidAfter.toUTC().toString("MMM d HH:mm:ss yyyy") + " GMT\n");
+    else
+        cetificateText.append("Unknown\n");
+
+    cetificateText.append("        Subject: ");
+
+    info = subjectInfo(QSslCertificate::CountryName);
+
+    if (!info.isEmpty())
+        cetificateText.append("C = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::StateOrProvinceName);
+
+    if (!info.isEmpty())
+        cetificateText.append("ST = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::LocalityName);
+
+    if (!info.isEmpty())
+        cetificateText.append("L = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::Organization);
+
+    if (!info.isEmpty())
+        cetificateText.append("O = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::OrganizationalUnitName);
+
+    if (!info.isEmpty())
+        cetificateText.append("OU = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::CommonName);
+
+    if (!info.isEmpty())
+        cetificateText.append("CN = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::EmailAddress);
+
+    if (!info.isEmpty())
+        cetificateText.append("emailAddress = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::DistinguishedNameQualifier);
+
+    if (!info.isEmpty())
+        cetificateText.append("dnQualifier = " + info.at(0) + ", ");
+
+    info = subjectInfo(QSslCertificate::SerialNumber);
+
+    if (!info.isEmpty())
+        cetificateText.append("serialNumber = " + info.at(0) + ", ");
+
+    cetificateText.chop(2);
+    cetificateText.append("        Subject Public Key Info:\n            Public Key Algorithm: ");
+
+    switch (d->publicKeyAlgorithm) {
+    case QSsl::Opaque:
+        cetificateText.append("opaqueEncryption\n");
+        break;
+    case QSsl::Rsa:
+        cetificateText.append("rsaEncryption\n");
+        break;
+    case QSsl::Dsa:
+        cetificateText.append("dsaEncryption\n");
+        break;
+    case QSsl::Ec:
+        cetificateText.append("ecEncryption\n");
+        break;
+    }
+
+    QSslKey key = publicKey();
+
+    cetificateText.append("                Public-Key: (" + QByteArray::number(
+                              key.length()) + " bit)\n");
+    cetificateText.append("                Modulus:\n                    Unknown\n");
+    cetificateText.append("                Exponent: Unknown\n");
+    cetificateText.append("        X509v3 extensions:\n");
+    cetificateText.append("    Signature Algorithm: Unknown\n");
+    cetificateText.append("         Unknown\n");
+
+    return cetificateText;
 }
 
 void QSslCertificatePrivate::init(const QByteArray &data, QSsl::EncodingFormat format)

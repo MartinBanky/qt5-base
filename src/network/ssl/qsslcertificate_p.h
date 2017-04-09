@@ -55,6 +55,8 @@
 // We mean it.
 //
 
+#define QT_NO_OPENSSL
+
 #include "qsslsocket_p.h"
 #include "qsslcertificateextension.h"
 #include <QtCore/qdatetime.h>
