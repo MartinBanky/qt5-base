@@ -494,50 +494,50 @@ void q_EVP_MD_CTX_init(EVP_MD_CTX *a);
 #ifndef OPENSSL_NO_MD2
 const EVP_MD *q_EVP_md2();
 #else
-inline const EVP_MD *q_EVP_md2(){return 0;}
+inline const EVP_MD *q_EVP_md2(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_MD4
 const EVP_MD *q_EVP_md4();
 #else
-inline const EVP_MD *q_EVP_md4(){return 0;}
+inline const EVP_MD *q_EVP_md4(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_MD5
 const EVP_MD *q_EVP_md5();
 #else
-inline const EVP_MD *q_EVP_md5(){return 0;}
+inline const EVP_MD *q_EVP_md5(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_SHA
 const EVP_MD *q_EVP_sha();
 const EVP_MD *q_EVP_sha1();
 const EVP_MD *q_EVP_dss1();
 #else
-inline const EVP_MD *q_EVP_sha(){return 0;}
-inline const EVP_MD *q_EVP_sha1(){return 0;}
-inline const EVP_MD *q_EVP_dss1(){return 0;}
+inline const EVP_MD *q_EVP_sha(){ return 0; }
+inline const EVP_MD *q_EVP_sha1(){ return 0; }
+inline const EVP_MD *q_EVP_dss1(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_SHA256
 const EVP_MD *q_EVP_sha224();
 const EVP_MD *q_EVP_sha256();
 #else
-inline const EVP_MD *q_EVP_sha224(){return 0;}
-inline const EVP_MD *q_EVP_sha224(){return 0;}
+inline const EVP_MD *q_EVP_sha224(){ return 0; }
+inline const EVP_MD *q_EVP_sha224(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_SHA512
 const EVP_MD *q_EVP_sha384();
 const EVP_MD *q_EVP_sha512();
 #else
-inline const EVP_MD *q_EVP_sha384(){return 0;}
-inline const EVP_MD *q_EVP_sha512(){return 0;}
+inline const EVP_MD *q_EVP_sha384(){ return 0; }
+inline const EVP_MD *q_EVP_sha512(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_MDC2
 const EVP_MD *q_EVP_mdc2();
 #else
-inline const EVP_MD *q_EVP_mdc2(){return 0;}
+inline const EVP_MD *q_EVP_mdc2(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_RIPEMD
 const EVP_MD *q_EVP_ripemd160();
 #else
-inline const EVP_MD *q_EVP_ripemd160(){return 0;}
+inline const EVP_MD *q_EVP_ripemd160(){ return 0; }
 #endif
 #ifndef OPENSSL_NO_DES
 const EVP_CIPHER *q_EVP_des_ecb();
@@ -560,25 +560,25 @@ const EVP_CIPHER *q_EVP_des_ede_cbc();
 const EVP_CIPHER *q_EVP_des_ede3_cbc();
 const EVP_CIPHER *q_EVP_desx_cbc();
 #else
-inline const EVP_CIPHER *q_EVP_des_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede3(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede3_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede3_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede3_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede3_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede3_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_des_ede3_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_desx_cbc(){return 0;}
+inline const EVP_CIPHER *q_EVP_des_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede3(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede3_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede3_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede3_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede3_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede3_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_des_ede3_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_desx_cbc(){ return 0; }
 #endif // OPENSSL_NO_DES
 #ifndef OPENSSL_NO_RC4
 const EVP_CIPHER *q_EVP_rc4();
@@ -586,11 +586,11 @@ const EVP_CIPHER *q_EVP_rc4_40();
 #ifndef OPENSSL_NO_MD5
 const EVP_CIPHER *q_EVP_rc4_hmac_md5();
 #else
-inline const EVP_CIPHER *q_EVP_rc4_hmac_md5(){return 0;}
+inline const EVP_CIPHER *q_EVP_rc4_hmac_md5(){ return 0; }
 #endif // OPENSSL_NO_MD5
 #else
-inline const EVP_CIPHER *q_EVP_rc4(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc4_40(){return 0;}
+inline const EVP_CIPHER *q_EVP_rc4(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc4_40(){ return 0; }
 #endif // OPENSSL_NO_RC4
 #ifndef OPENSSL_NO_IDEA
 const EVP_CIPHER *q_EVP_idea_ecb();
@@ -598,10 +598,10 @@ const EVP_CIPHER *q_EVP_idea_cfb64();
 const EVP_CIPHER *q_EVP_idea_ofb();
 const EVP_CIPHER *q_EVP_idea_cbc();
 #else
-inline const EVP_CIPHER *q_EVP_idea_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_idea_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_idea_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_idea_cbc(){return 0;}
+inline const EVP_CIPHER *q_EVP_idea_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_idea_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_idea_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_idea_cbc(){ return 0; }
 #endif // OPENSSL_NO_IDEA
 #ifndef OPENSSL_NO_RC2
 const EVP_CIPHER *q_EVP_rc2_ecb();
@@ -611,12 +611,12 @@ const EVP_CIPHER *q_EVP_rc2_64_cbc();
 const EVP_CIPHER *q_EVP_rc2_cfb64();
 const EVP_CIPHER *q_EVP_rc2_ofb();
 #else
-inline const EVP_CIPHER *q_EVP_rc2_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc2_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc2_40_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc2_64_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc2_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc2_ofb(){return 0;}
+inline const EVP_CIPHER *q_EVP_rc2_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc2_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc2_40_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc2_64_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc2_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc2_ofb(){ return 0; }
 #endif // OPENSSL_NO_RC2
 #ifndef OPENSSL_NO_BF
 const EVP_CIPHER *q_EVP_bf_ecb();
@@ -624,10 +624,10 @@ const EVP_CIPHER *q_EVP_bf_cbc();
 const EVP_CIPHER *q_EVP_bf_cfb64();
 const EVP_CIPHER *q_EVP_bf_ofb();
 #else
-inline const EVP_CIPHER *q_EVP_bf_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_bf_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_bf_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_bf_ofb(){return 0;}
+inline const EVP_CIPHER *q_EVP_bf_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_bf_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_bf_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_bf_ofb(){ return 0; }
 #endif // OPENSSL_NO_BF
 #ifndef OPENSSL_NO_CAST
 const EVP_CIPHER *q_EVP_cast5_ecb();
@@ -635,10 +635,10 @@ const EVP_CIPHER *q_EVP_cast5_cbc();
 const EVP_CIPHER *q_EVP_cast5_cfb64();
 const EVP_CIPHER *q_EVP_cast5_ofb();
 #else
-inline const EVP_CIPHER *q_EVP_cast5_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_cast5_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_cast5_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_cast5_ofb(){return 0;}
+inline const EVP_CIPHER *q_EVP_cast5_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_cast5_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_cast5_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_cast5_ofb(){ return 0; }
 #endif // OPENSSL_NO_CAST
 #ifndef OPENSSL_NO_RC5
 const EVP_CIPHER *q_EVP_rc5_32_12_16_cbc();
@@ -646,10 +646,10 @@ const EVP_CIPHER *q_EVP_rc5_32_12_16_ecb();
 const EVP_CIPHER *q_EVP_rc5_32_12_16_cfb64();
 const EVP_CIPHER *q_EVP_rc5_32_12_16_ofb();
 #else
-inline const EVP_CIPHER *q_EVP_rc5_32_12_16_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc5_32_12_16_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc5_32_12_16_cfb64(){return 0;}
-inline const EVP_CIPHER *q_EVP_rc5_32_12_16_ofb(){return 0;}
+inline const EVP_CIPHER *q_EVP_rc5_32_12_16_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc5_32_12_16_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc5_32_12_16_cfb64(){ return 0; }
+inline const EVP_CIPHER *q_EVP_rc5_32_12_16_ofb(){ return 0; }
 #endif // OPENSSL_NO_RC5
 #ifndef OPENSSL_NO_AES
 const EVP_CIPHER *q_EVP_aes_128_ecb();
@@ -685,46 +685,46 @@ const EVP_CIPHER *q_EVP_aes_256_xts();
 const EVP_CIPHER *q_EVP_aes_128_cbc_hmac_sha1();
 const EVP_CIPHER *q_EVP_aes_256_cbc_hmac_sha1();
 #else
-inline const EVP_CIPHER *q_EVP_aes_128_cbc_hmac_sha1(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_cbc_hmac_sha1(){return 0;}
+inline const EVP_CIPHER *q_EVP_aes_128_cbc_hmac_sha1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_cbc_hmac_sha1(){ return 0; }
 #endif // !defined(OPENSSL_NO_SHA) && !defined(OPENSSL_NO_SHA1)
 #ifndef OPENSSL_NO_SHA256
 const EVP_CIPHER *q_EVP_aes_128_cbc_hmac_sha256();
 const EVP_CIPHER *q_EVP_aes_256_cbc_hmac_sha256();
 #else
-inline const EVP_CIPHER *q_EVP_aes_128_cbc_hmac_sha256(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_cbc_hmac_sha256(){return 0;}
+inline const EVP_CIPHER *q_EVP_aes_128_cbc_hmac_sha256(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_cbc_hmac_sha256(){ return 0; }
 #endif // OPENSSL_NO_SHA256
 #else
-inline const EVP_CIPHER *q_EVP_aes_128_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_cfb128(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_ctr(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_ccm(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_gcm(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_128_xts(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_cfb128(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_ctr(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_ccm(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_192_gcm(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_cfb128(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_ctr(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_ccm(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_gcm(){return 0;}
-inline const EVP_CIPHER *q_EVP_aes_256_xts(){return 0;}
+inline const EVP_CIPHER *q_EVP_aes_128_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_cfb128(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_ctr(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_ccm(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_gcm(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_128_xts(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_cfb128(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_ctr(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_ccm(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_192_gcm(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_cfb128(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_ctr(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_ccm(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_gcm(){ return 0; }
+inline const EVP_CIPHER *q_EVP_aes_256_xts(){ return 0; }
 #endif // OPENSSL_NO_AES
 #ifndef OPENSSL_NO_CAMELLIA
 const EVP_CIPHER *q_EVP_camellia_128_ecb();
@@ -746,24 +746,24 @@ const EVP_CIPHER *q_EVP_camellia_256_cfb8();
 const EVP_CIPHER *q_EVP_camellia_256_cfb128();
 const EVP_CIPHER *q_EVP_camellia_256_ofb();
 #else
-inline const EVP_CIPHER *q_EVP_camellia_128_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_128_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_128_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_128_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_128_cfb128(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_128_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_192_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_192_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_192_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_192_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_192_cfb128(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_192_ofb(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_256_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_256_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_256_cfb1(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_256_cfb8(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_256_cfb128(){return 0;}
-inline const EVP_CIPHER *q_EVP_camellia_256_ofb(){return 0;}
+inline const EVP_CIPHER *q_EVP_camellia_128_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_128_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_128_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_128_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_128_cfb128(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_128_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_192_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_192_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_192_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_192_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_192_cfb128(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_192_ofb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_256_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_256_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_256_cfb1(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_256_cfb8(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_256_cfb128(){ return 0; }
+inline const EVP_CIPHER *q_EVP_camellia_256_ofb(){ return 0; }
 #endif // OPENSSL_NO_CAMELLIA
 #ifndef OPENSSL_NO_SEED
 const EVP_CIPHER *q_EVP_seed_ecb();
@@ -771,10 +771,10 @@ const EVP_CIPHER *q_EVP_seed_cbc();
 const EVP_CIPHER *q_EVP_seed_cfb128();
 const EVP_CIPHER *q_EVP_seed_ofb();
 #else
-inline const EVP_CIPHER *q_EVP_seed_ecb(){return 0;}
-inline const EVP_CIPHER *q_EVP_seed_cbc(){return 0;}
-inline const EVP_CIPHER *q_EVP_seed_cfb128(){return 0;}
-inline const EVP_CIPHER *q_EVP_seed_ofb(){return 0;}
+inline const EVP_CIPHER *q_EVP_seed_ecb(){ return 0; }
+inline const EVP_CIPHER *q_EVP_seed_cbc(){ return 0; }
+inline const EVP_CIPHER *q_EVP_seed_cfb128(){ return 0; }
+inline const EVP_CIPHER *q_EVP_seed_ofb(){ return 0; }
 #endif // OPENSSL_NO_SEED
 int q_i2d_X509_CRL_bio(BIO *a, X509_CRL *b);
 int q_PEM_write_bio_X509_CRL(BIO *a, X509_CRL *b);

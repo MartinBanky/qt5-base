@@ -387,10 +387,12 @@ DEFINEFUNC(int, DSA_bits, DSA *a, a, return 0, return)
 #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
 DEFINEFUNC(int, DSA_generate_key, DSA *a, a, return 0, return)
 DEFINEFUNC7(int, DSA_generate_parameters_ex, DSA *a, a, int b, b, const unsigned char *c, c, int d, d, int *e, e, unsigned long *f, f, BN_GENCB *g, g, return 0, return)
+#ifndef OPENSSL_NO_EC
 DEFINEFUNC(EC_GROUP *, EC_GROUP_new, const EC_METHOD *a, a, return 0, return)
 DEFINEFUNC(int, EC_KEY_generate_key, EC_KEY *a, a, return 0, return)
 DEFINEFUNC(const EC_METHOD *, EC_GFp_mont_method, DUMMYARG, DUMMYARG, return 0, return)
 DEFINEFUNC(EC_KEY *, EC_KEY_new, DUMMYARG, DUMMYARG, return 0, return)
+#endif // OPENSSL_NO_EC
 DEFINEFUNC5(int, EVP_DigestSignInit, EVP_MD_CTX *a, a, EVP_PKEY_CTX **b, b, const EVP_MD *c, c, ENGINE *d, d, EVP_PKEY *e, e, return 0, return)
 DEFINEFUNC(void, EVP_MD_CTX_init, EVP_MD_CTX *a, a, return 0, return)
 #ifndef OPENSSL_NO_MD2
