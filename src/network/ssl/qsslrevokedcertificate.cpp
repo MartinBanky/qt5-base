@@ -120,9 +120,9 @@ QSslRevokedCertificate &QSslRevokedCertificate::operator=(const QSslRevokedCerti
     Returns \c true if this revoked certificate is the same as
     \a other; otherwise, false is returned.
 */
-bool QSslRevokedCertificate::operator==(const QSslRevokedCertificate &other) const
+bool operator==(const QSslRevokedCertificate &lhs, const QSslRevokedCertificate &rhs)
 {
-    return d->serialNumber == other.d->serialNumber && d->revocationDate == other.d->revocationDate;
+    return lhs.d->serialNumber == rhs.d->serialNumber && lhs.d->revocationDate == rhs.d->revocationDate;
 }
 
 /*!
