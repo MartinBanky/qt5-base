@@ -154,7 +154,7 @@ public:
     qint8 addExtension(X509 *signer, X509_CRL *crl, qint32 nid, QByteArray value) const;
     QString QStringFromX509Crl() const;
 
-    void checkForErrors(QSslError *sslError = Q_NULLPTR) const;
+    bool checkForErrors(QSslError *sslError = Q_NULLPTR) const;
     void signCrl(QSslError *sslError = Q_NULLPTR);
 
 private:

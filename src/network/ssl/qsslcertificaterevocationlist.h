@@ -75,10 +75,6 @@ public:
     void swap(QSslCertificateRevocationList &other) Q_DECL_NOTHROW
     { qSwap(d, other.d); }
 
-    bool operator==(const QSslCertificateRevocationList &other) const;
-    inline bool operator!=(const QSslCertificateRevocationList &other) const
-    { return !operator==(other); }
-
     void addRevokedCertificates(const QList<QSslCertificate> &certificatesToRevoke,
             QSslError *sslError = Q_NULLPTR) const;
     void generateCertificateRevocationList(const QList<QSslCertificate> &certificatesToRevoke,
@@ -116,13 +112,25 @@ public:
 
 private:
     QExplicitlySharedDataPointer<QSslCertificateRevocationListPrivate> d;
+
+    friend Q_NETWORK_EXPORT bool operator==(
+            const QSslCertificateRevocationList &lhs, const QSslCertificateRevocationList &rhs);
+
     friend class QSslCertificateRevocationListPrivate;
 };
 Q_DECLARE_SHARED(QSslCertificateRevocationList)
 
+Q_NETWORK_EXPORT bool operator==(
+        const QSslCertificateRevocationList &lhs, const QSslCertificateRevocationList &rhs);
+
+inline bool operator!=(
+        const QSslCertificateRevocationList &lhs, const QSslCertificateRevocationList &rhs)
+{ return !operator==(lhs, rhs); }
+
 #ifndef QT_NO_DEBUG_STREAM
 class QDebug;
-Q_NETWORK_EXPORT QDebug operator<<(QDebug debug, const QSslCertificateRevocationList &certificateRevocationList);
+Q_NETWORK_EXPORT QDebug operator<<(
+        QDebug debug, const QSslCertificateRevocationList &certificateRevocationList);
 #endif
 
 QT_END_NAMESPACE

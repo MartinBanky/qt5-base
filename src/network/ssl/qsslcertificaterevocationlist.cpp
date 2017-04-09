@@ -206,15 +206,19 @@ QSslCertificateRevocationList &QSslCertificateRevocationList::operator=(
     return *this;
 }
 
-bool QSslCertificateRevocationList::operator==(const QSslCertificateRevocationList &other) const
+/*!
+    Returns \c true if this certificate revocation list
+    is the same as \a other; otherwise, false is returned.
+*/
+bool operator==(const QSslCertificateRevocationList &lhs, const QSslCertificateRevocationList &rhs)
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+    QMutexLocker lock(QMutexPool::globalInstanceGet(lhs.d.data()));
 
-    if (d == other.d || (d->null && other.d->null)) {
+    if (lhs.d == rhs.d || (lhs.d->null && rhs.d->null)) {
         return true;
 #ifndef QT_NO_OPENSSL
-    } else if (d->x509Crl && other.d->x509Crl) {
-        return q_X509_CRL_match(d->x509Crl, other.d->x509Crl) == 0;
+    } else if (lhs.d->x509Crl && rhs.d->x509Crl) {
+        return q_X509_CRL_match(lhs.d->x509Crl, rhs.d->x509Crl) == 0;
 #endif
     }
 

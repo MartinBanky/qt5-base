@@ -67,9 +67,6 @@ public:
 
     void swap(QSslRevokedCertificate &other) Q_DECL_NOTHROW { qSwap(d, other.d); }
 
-    bool operator==(const QSslRevokedCertificate &other) const;
-    inline bool operator!=(const QSslRevokedCertificate &other) const { return !operator==(other); }
-
     void setSerialNumber(const QByteArray &serialNumber) const;
     void setRevocationDate(const QDateTime &revocationDate) const;
 
@@ -80,11 +77,20 @@ public:
 private:
     QScopedPointer<QSslRevokedCertificatePrivate> d;
 
+    friend Q_NETWORK_EXPORT bool operator==(
+            const QSslRevokedCertificate &lhs, const QSslRevokedCertificate &rhs);
+
     friend class QSslCertificateRevocationList;
     friend class QSslCertificateRevocationListPrivate;
 };
 
 Q_DECLARE_SHARED(QSslRevokedCertificate)
+
+Q_NETWORK_EXPORT bool operator==(
+        const QSslRevokedCertificate &lhs, const QSslRevokedCertificate &rhs);
+
+inline bool operator!=(const QSslRevokedCertificate &lhs, const QSslRevokedCertificate &rhs)
+{ return !operator==(lhs, rhs); }
 
 #ifndef QT_NO_DEBUG_STREAM
 class QDebug;

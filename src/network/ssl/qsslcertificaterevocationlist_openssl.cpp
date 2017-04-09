@@ -72,67 +72,65 @@ QT_BEGIN_NAMESPACE
 void QSslCertificateRevocationListPrivate::addRevokedCertificates(
         const QList<QSslCertificate> &certificatesToRevoke, QSslError *sslError)
 {
-    if (certificatesToRevoke.isEmpty()) {
-        sslError->setError(QSslError::UnableToGetRevocationList);
-        return;
-    }
+    if (!certificatesToRevoke.isEmpty()) {
+        if (checkForErrors(sslError)) {
+            setTimes();
 
-    checkForErrors(sslError);
+            const qint32 revokedCertificatesSize = m_revokedCertificates.size();
+            const qint32 revocationCertificatesSize = certificatesToRevoke.size();
 
-    if (sslError->error())
-        return;
+            QByteArray addToCrl(revocationCertificatesSize, 1);
 
-    setTimes();
-
-    const qint32 revokedCertificatesSize = m_revokedCertificates.size();
-    const qint32 revocationCertificatesSize = certificatesToRevoke.size();
-
-    QByteArray addToCrl(revocationCertificatesSize, 1);
-
-    if (revocationCertificatesSize > revokedCertificatesSize) {
-        for (qint32 i = 0; i < revokedCertificatesSize; ++i) {
-            for (qint32 j = 0; j < revocationCertificatesSize; ++j) {
-                if (m_revokedCertificates.at(i).d->serialNumber
-                        == certificatesToRevoke.at(j).d->serialNumberHex) {
-                    addToCrl[j] = 0;
-                    break;
+            if (revocationCertificatesSize > revokedCertificatesSize) {
+                for (qint32 i = 0; i < revokedCertificatesSize; ++i) {
+                    for (qint32 j = 0; j < revocationCertificatesSize; ++j) {
+                        if (m_revokedCertificates.at(i).d->serialNumber
+                                == certificatesToRevoke.at(j).d->serialNumberHex) {
+                            addToCrl[j] = 0;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                for (qint32 i = 0; i < revocationCertificatesSize; ++i) {
+                    for (qint32 j = 0; j < revokedCertificatesSize; ++j) {
+                        if (m_revokedCertificates.at(j).d->serialNumber
+                                == certificatesToRevoke.at(i).d->serialNumberHex) {
+                            addToCrl[i] = 0;
+                            break;
+                        }
+                    }
                 }
             }
+
+            X509_REVOKED *revoked;
+
+            for (qint32 i = 0; i < revocationCertificatesSize; ++i) {
+                if (addToCrl.at(i)) {
+                    QSslRevokedCertificate revokedCert;
+                    revokedCert.setSerialNumber(certificatesToRevoke.at(i).d->serialNumberHex);
+                    revokedCert.setRevocationDate(m_lastUpdate);
+                    m_revokedCertificates.append(revokedCert);
+
+                    revoked = q_X509_REVOKED_new();
+        #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
+                    q_X509_REVOKED_set_revocationDate(revoked, q_X509_CRL_get0_lastUpdate(x509Crl));
+        #else
+                    q_X509_REVOKED_set_revocationDate(revoked, q_X509_CRL_get_lastUpdate(x509Crl));
+        #endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
+                    q_X509_REVOKED_set_serialNumber(revoked,
+                            q_X509_get_serialNumber(certificatesToRevoke.at(i).d->x509));
+                    q_X509_CRL_add0_revoked(x509Crl, revoked);
+                }
+            }
+
+            signCrl();
         }
     } else {
-        for (qint32 i = 0; i < revocationCertificatesSize; ++i) {
-            for (qint32 j = 0; j < revokedCertificatesSize; ++j) {
-                if (m_revokedCertificates.at(j).d->serialNumber
-                        == certificatesToRevoke.at(i).d->serialNumberHex) {
-                    addToCrl[i] = 0;
-                    break;
-                }
-            }
-        }
+        if (sslError)
+            sslError->setError(QSslError::UnableToGetRevocationList);
+        return;
     }
-
-    X509_REVOKED *revoked;
-
-    for (qint32 i = 0; i < revocationCertificatesSize; ++i) {
-        if (addToCrl.at(i)) {
-            QSslRevokedCertificate revokedCert;
-            revokedCert.setSerialNumber(certificatesToRevoke.at(i).d->serialNumberHex);
-            revokedCert.setRevocationDate(m_lastUpdate);
-            m_revokedCertificates.append(revokedCert);
-
-            revoked = q_X509_REVOKED_new();
-#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-            q_X509_REVOKED_set_revocationDate(revoked, q_X509_CRL_get0_lastUpdate(x509Crl));
-#else
-            q_X509_REVOKED_set_revocationDate(revoked, q_X509_CRL_get_lastUpdate(x509Crl));
-#endif // OPENSSL_VERSION_NUMBER >= 0x1010000fL
-            q_X509_REVOKED_set_serialNumber(revoked,
-                    q_X509_get_serialNumber(certificatesToRevoke.at(i).d->x509));
-            q_X509_CRL_add0_revoked(x509Crl, revoked);
-        }
-    }
-
-    return signCrl();
 }
 
 /*!
@@ -168,42 +166,60 @@ qint8 QSslCertificateRevocationListPrivate::addExtension(X509 *signer, X509_CRL 
 /*!
     \internal
  */
-void QSslCertificateRevocationListPrivate::checkForErrors(QSslError *sslError) const
+bool QSslCertificateRevocationListPrivate::checkForErrors(QSslError *sslError) const
 {
+    bool noErrors = true;
+
     if (null) {
-        sslError->setError(QSslError::InvalidCaCertificate);
-        return;
+        if (sslError)
+            sslError->setError(QSslError::InvalidCaCertificate);
+        noErrors = false;
+        return noErrors;
     }
 
     if (m_crlNumber.isEmpty()) {
-        sslError->setError(QSslError::CrlNumberInvalid);
-        return;
+        if (sslError)
+            sslError->setError(QSslError::CrlNumberInvalid);
+        noErrors = false;
+        return noErrors;
     }
 
     if (!q_X509_CRL_get_version(x509Crl)) {
-        sslError->setError(QSslError::InvalidCrlVersion);
-        return;
+        if (sslError)
+            sslError->setError(QSslError::InvalidCrlVersion);
+        noErrors = false;
+        return noErrors;
     }
 
     if (certificateAuthorityCertificate && !certificateAuthorityCertificate->isNull()) {
         if (certificateAuthorityKey.isNull()) {
-            sslError->setError(QSslError::UnableToDecodeIssuerPrivateKey);
-            return;
+            if (sslError)
+                sslError->setError(QSslError::UnableToDecodeIssuerPrivateKey);
+            return noErrors;
+            noErrors = false;
         } else if (!q_X509_check_private_key(certificateAuthorityCertificate->d->x509,
                 certificateAuthorityKey.d->pKey)) {
-            sslError->setError(QSslError::CaCertificateAndKeyDontMatch);
-            return;
+            if (sslError)
+                sslError->setError(QSslError::CaCertificateAndKeyDontMatch);
+            noErrors = false;
+            return noErrors;
         }
 
         if (certificateAuthorityKey.d->algorithm == QSsl::Ec
                 || certificateAuthorityKey.d->algorithm == QSsl::Opaque) {
-            sslError->setError(QSslError::InvalidSigningKey);
-            return;
+            if (sslError)
+                sslError->setError(QSslError::InvalidSigningKey);
+            noErrors = false;
+            return noErrors;
         }
     } else {
-        sslError->setError(QSslError::UnableToGetIssuerCertificate);
-        return;
+        if (sslError)
+            sslError->setError(QSslError::UnableToGetIssuerCertificate);
+        noErrors = false;
+        return noErrors;
     }
+
+    return noErrors;
 }
 
 /*!
@@ -234,7 +250,7 @@ void QSslCertificateRevocationListPrivate::crlFromPem(const QByteArray &pem)
     static const auto begin = qMakeStaticByteArrayMatcher("-----BEGIN X509 CRL-----");
     static const auto end = qMakeStaticByteArrayMatcher("-----END X509 CRL-----");
 
-    if (begin.indexIn(text) && end.indexIn(text)) {
+    if (begin.indexIn(text) != -1 && end.indexIn(text) ) {
         text = text.simplified();
 
         const qint32 beginSize = begin.pattern().size();
@@ -304,10 +320,10 @@ void QSslCertificateRevocationListPrivate::generateCertificateRevocationList(
     if (certificateAuthorityCertificate && !certificateAuthorityCertificate->isNull()) {
         setStartOfCrl();
         null = false;
-
         addRevokedCertificates(certificatesToRevoke);
     }else{
-        sslError->setError(QSslError::UnableToGetIssuerCertificate);
+        if (sslError)
+            sslError->setError(QSslError::UnableToGetIssuerCertificate);
     }
 }
 
@@ -339,7 +355,7 @@ QMap<QByteArray, QString> QSslCertificateRevocationListPrivate::issuerInfo() con
         objName = QSslCertificatePrivate::asn1ObjectName(q_X509_NAME_ENTRY_get_object(nameEntry));
         entrySize = q_ASN1_STRING_to_UTF8(&data, q_X509_NAME_ENTRY_get_data(nameEntry));
         info.insert(objName, QString::fromUtf8(reinterpret_cast<char *>(data), entrySize));
-        q_CRYPTO_free(data);
+        q_OPENSSL_free(data);
     }
 
     return info;
@@ -390,7 +406,8 @@ QByteArray QSslCertificateRevocationListPrivate::QByteArrayFromX509Crl(QSsl::Enc
             q_PEM_write_bio_X509_CRL(bio, x509Crl);
             size = static_cast<qint32>(q_BIO_number_written(bio));
         } else {
-            size = q_i2d_X509_CRL_bio(bio, x509Crl);
+            q_i2d_X509_CRL_bio(bio, x509Crl);
+            size = static_cast<qint32>(q_BIO_number_written(bio));
         }
 
         QByteArray x509CrlString(size, '0');
@@ -434,9 +451,7 @@ void QSslCertificateRevocationListPrivate::removeRevokedCertificates(
         const QDateTime &dateTime, QSslError *sslError)
 {
     if (dateTime.isValid()) {
-        checkForErrors(sslError);
-
-        if (!sslError->error()) {
+        if (checkForErrors(sslError)) {
             setStartOfCrl();
             setTimes();
 
@@ -454,10 +469,11 @@ void QSslCertificateRevocationListPrivate::removeRevokedCertificates(
 
             revokeCertificates(revokedCertificates, addToCrl);
 
-            return signCrl();
+            signCrl();
         }
     } else {
-        sslError->setError(QSslError::InvalidDateTime);
+        if (sslError)
+            sslError->setError(QSslError::InvalidDateTime);
     }
 }
 
@@ -468,9 +484,7 @@ void QSslCertificateRevocationListPrivate::removeRevokedCertificates(
         const QList<QSslRevokedCertificate> &certificatesToRemove, QSslError *sslError)
 {
     if (!certificatesToRemove.isEmpty()) {
-        checkForErrors(sslError);
-
-        if (!sslError->error()) {
+        if (checkForErrors(sslError)) {
             setStartOfCrl();
             setTimes();
 
@@ -508,7 +522,8 @@ void QSslCertificateRevocationListPrivate::removeRevokedCertificates(
             signCrl();
         }
     } else{
-        sslError->setError(QSslError::UnableToGetRevocationList);
+        if (sslError)
+            sslError->setError(QSslError::UnableToGetRevocationList);
     }
 }
 
@@ -717,7 +732,8 @@ void QSslCertificateRevocationListPrivate::signCrl(QSslError *sslError)
         X509_CRL_print_fp(stdout, x509Crl);
 #endif
     } else {
-        sslError->setError(QSslError::SignatureAlgorithmUnavailable);
+        if (sslError)
+            sslError->setError(QSslError::SignatureAlgorithmUnavailable);
     }
 }
 
@@ -756,7 +772,9 @@ void QSslCertificateRevocationListPrivate::verify(
 
         if (Q_UNLIKELY(!certStore)) {
             qCWarning(lcSsl) << "Unable to create certificate store";
-            sslError->setError(QSslError::UnspecifiedError);
+
+            if (sslError)
+                sslError->setError(QSslError::UnspecifiedError);
             return;
         }
 
@@ -783,7 +801,9 @@ void QSslCertificateRevocationListPrivate::verify(
 
         if (Q_UNLIKELY(emptyCertStore)) {
             q_X509_STORE_free(certStore);
-            sslError->setError(QSslError::UnableToGetIssuerCertificate);
+
+            if (sslError)
+                sslError->setError(QSslError::UnableToGetIssuerCertificate);
             return;
         }
 
@@ -791,14 +811,18 @@ void QSslCertificateRevocationListPrivate::verify(
 
         if (Q_UNLIKELY(!storeContext)) {
             q_X509_STORE_free(certStore);
-            sslError->setError(QSslError::UnspecifiedError);
+
+            if (sslError)
+                sslError->setError(QSslError::UnspecifiedError);
             return;
         }
 
         if (Q_UNLIKELY(!q_X509_STORE_CTX_init(storeContext, certStore, 0, 0))) {
             q_X509_STORE_CTX_free(storeContext);
             q_X509_STORE_free(certStore);
-            sslError->setError(QSslError::UnspecifiedError);
+
+            if (sslError)
+                sslError->setError(QSslError::UnspecifiedError);
             return;
         }
 
@@ -810,7 +834,9 @@ void QSslCertificateRevocationListPrivate::verify(
             q_X509_STORE_CTX_free(storeContext);
             q_X509_STORE_free(certStore);
             q_X509_OBJECT_free_contents(&x509Object);
-            sslError->setError(QSslError::UnableToGetIssuerCertificate);
+
+            if (sslError)
+                sslError->setError(QSslError::UnableToGetIssuerCertificate);
             return;
         }
 
@@ -821,7 +847,9 @@ void QSslCertificateRevocationListPrivate::verify(
             q_X509_STORE_CTX_free(storeContext);
             q_X509_STORE_free(certStore);
             q_EVP_PKEY_free(pkey);
-            sslError->setError(QSslError::UnableToDecodeIssuerPublicKey);
+
+            if (sslError)
+                sslError->setError(QSslError::UnableToDecodeIssuerPublicKey);
             return;
         }
 
@@ -831,7 +859,9 @@ void QSslCertificateRevocationListPrivate::verify(
         if (Q_UNLIKELY(i < 0)) {
             q_X509_STORE_CTX_free(storeContext);
             q_X509_STORE_free(certStore);
-            sslError->setError(QSslError::UnspecifiedError);
+
+            if (sslError)
+                sslError->setError(QSslError::UnspecifiedError);
             return;
         }
 
@@ -840,7 +870,8 @@ void QSslCertificateRevocationListPrivate::verify(
 
         i == 0 ? valid = false : valid = true;
     } else {
-        sslError->setError(QSslError::UnableToGetIssuerCertificate);
+        if (sslError)
+            sslError->setError(QSslError::UnableToGetIssuerCertificate);
     }
 
 }
