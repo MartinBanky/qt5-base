@@ -91,8 +91,6 @@ bool QSslCertificate::isSelfSigned() const
 
 QSsl::SignatureAlgorithm QSslCertificate::signatureAlgorithm() const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     qint32 nid = q_X509_get_signature_nid(d->x509);
 
     if (nid) {
@@ -287,8 +285,6 @@ QSslKey QSslCertificate::publicKey() const
 
 QSslError::SslError QSslCertificate::generateCertificate() const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     if (!d->notValidBefore.isValid()) {
         return QSslError::InvalidNotBeforeField;
     }
@@ -494,8 +490,6 @@ void QSslCertificate::setCertificateAuthority(QSslCertificate *certificate, cons
 
 void QSslCertificate::setDuration(qint32 days) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->notValidBefore = QDateTime::currentDateTime();
     d->notValidAfter = d->notValidBefore.addDays(days);
 
@@ -520,8 +514,6 @@ void QSslCertificate::setSignatureAlgorithm(const QSsl::SignatureAlgorithm signa
 
 void QSslCertificate::setSubjectCountry(const QByteArray &country) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->country = country;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -531,8 +523,6 @@ void QSslCertificate::setSubjectCountry(const QByteArray &country) const
 
 void QSslCertificate::setSubjectState(const QByteArray &state) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->state = state;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -542,8 +532,6 @@ void QSslCertificate::setSubjectState(const QByteArray &state) const
 
 void QSslCertificate::setSubjectLocation(const QByteArray &location) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->location = location;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -553,8 +541,6 @@ void QSslCertificate::setSubjectLocation(const QByteArray &location) const
 
 void QSslCertificate::setSubjectOrginization(const QByteArray &organization) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->organization = organization;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -564,8 +550,6 @@ void QSslCertificate::setSubjectOrginization(const QByteArray &organization) con
 
 void QSslCertificate::setSubjectOrginizationUnit(const QByteArray &organizationUnit) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->organizationUnit = organizationUnit;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -575,8 +559,6 @@ void QSslCertificate::setSubjectOrginizationUnit(const QByteArray &organizationU
 
 void QSslCertificate::setSubjectCommonName(const QByteArray &commonName) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->commonName = commonName;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -586,8 +568,6 @@ void QSslCertificate::setSubjectCommonName(const QByteArray &commonName) const
 
 void QSslCertificate::setSubjectEmailAddress(const QByteArray &emailAddress) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->emailAddress = emailAddress;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -597,8 +577,6 @@ void QSslCertificate::setSubjectEmailAddress(const QByteArray &emailAddress) con
 
 void QSslCertificate::setSubjectDistinguishedNameQualifier(const QByteArray &distinguishedNameQualifier) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->distinguishedNameQualifier = distinguishedNameQualifier;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -608,8 +586,6 @@ void QSslCertificate::setSubjectDistinguishedNameQualifier(const QByteArray &dis
 
 void QSslCertificate::setSubjectSerialNumber(const QByteArray &subjectSerialNumber) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->subjectSerialNumber = subjectSerialNumber;
 
     X509_NAME *name = q_X509_get_subject_name(d->x509);
@@ -619,8 +595,6 @@ void QSslCertificate::setSubjectSerialNumber(const QByteArray &subjectSerialNumb
 
 void QSslCertificate::setVersion(qint32 version) const
 {
-    QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
-
     d->version = version - 1;
     d->versionString = QByteArray::number(version);
 }

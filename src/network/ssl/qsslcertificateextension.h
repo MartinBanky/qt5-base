@@ -67,7 +67,7 @@ public:
     void swap(QSslCertificateExtension &other) Q_DECL_NOTHROW { qSwap(d, other.d); }
 
     void setNid(qint32 nid);
-    void setNidValue(const QByteArray nidValue);
+    void setNidValue(const QByteArray &nidValue);
 
     qint32 nid() const;
     QString oid() const;
