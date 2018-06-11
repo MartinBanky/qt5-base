@@ -127,6 +127,43 @@ public:
 
     static bool s_loadRootCertsOnDemand;
 
+    // Server side SNI support
+    /*
+     * This union prevents a lot of casts from having to be performed. The
+     * ClientHello message is all unsigned data types, with the maximum
+     * numerical data type being 24 bits. Therefore, we can get away with
+     * using a signed 32 bit integer to represent unsigned data.
+     */
+    typedef union uqint32{
+        qint32 s32;
+        qint8 s8[4];
+    }uqint32;
+
+    enum ClientHelloIndex{
+        ContentTypeIndex,
+        ContentLengthMsbIndex = 3,
+        ContentLengthLsbIndex,
+        HandshakeTypeIndex,
+        HandshakeLengthMsbIndex,
+        HandshakeLengthNsbIndex,
+        HandshakeLengthLsbIndex,
+        ClientHelloMsgStartIndex,
+        SessionIdLengthIndex = 43
+    };
+
+    enum TlsTypes{
+        HostNameType = 0x00,
+        ServerNameType = 0x0000,
+        ClientHelloType = 0x01,
+        HandshakeType = 0x16,
+    };
+
+    bool sniMode;
+    bool pauseHandshake;
+    QByteArray clientHelloMessage;
+
+    void getServerNameIndicator(const QByteArray clientHelloMessage);
+
     static bool supportsSsl();
     static long sslLibraryVersionNumber();
     static QString sslLibraryVersionString();
@@ -184,6 +221,7 @@ public:
     void _q_flushWriteBuffer();
     void _q_flushReadBuffer();
     void _q_resumeImplementation();
+    void _q_readySniSlot(const QByteArray);
 #if defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
     virtual void _q_caRootLoaded(QSslCertificate,QSslCertificate) = 0;
 #endif
@@ -196,6 +234,7 @@ public:
     bool flush() override;
 
     // Platform specific functions
+    virtual void resumeHandshake() = 0;
     virtual void startClientEncryption() = 0;
     virtual void startServerEncryption() = 0;
     virtual void transmit() = 0;

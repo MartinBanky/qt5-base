@@ -122,6 +122,7 @@ public:
     // SSL context
     bool initSslContext();
     void destroySslContext();
+    bool switchSslContext();
     SSL *ssl;
     BIO *readBio;
     BIO *writeBio;
@@ -132,6 +133,7 @@ public:
 #endif
 
     // Platform specific functions
+    void resumeHandshake() override;
     void startClientEncryption() override;
     void startServerEncryption() override;
     void transmit() override;

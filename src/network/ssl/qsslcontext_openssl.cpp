@@ -308,4 +308,9 @@ void QSslContext::applyBackendConfig(QSslContext *sslContext)
     }
 }
 
+void QSslContext::switchSslContext(SSL *ssl)
+{
+    q_SSL_set_SSL_CTX(ssl, ctx);
+}
+
 QT_END_NAMESPACE

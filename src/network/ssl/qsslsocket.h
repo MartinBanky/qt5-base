@@ -150,6 +150,10 @@ public:
                        const QByteArray &passPhrase = QByteArray());
     QSslKey privateKey() const;
 
+    // Server side SNI support
+    void setServerNameIndicationModeEnabled();
+    void resumeHandshake();
+
     // Cipher settings.
 #if QT_DEPRECATED_SINCE(5, 5)
     QT_DEPRECATED_X("Use QSslConfiguration::ciphers()") QList<QSslCipher> ciphers() const;
@@ -206,6 +210,7 @@ Q_SIGNALS:
     void sslErrors(const QList<QSslError> &errors);
     void modeChanged(QSslSocket::SslMode newMode);
     void encryptedBytesWritten(qint64 totalBytes);
+    void serverNameIndicatorReady(const QByteArray serverNameIndicator);
     void preSharedKeyAuthenticationRequired(QSslPreSharedKeyAuthenticator *authenticator);
 
 protected:

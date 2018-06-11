@@ -380,6 +380,7 @@ void q_SSL_set_accept_state(SSL *a);
 void q_SSL_set_connect_state(SSL *a);
 int q_SSL_shutdown(SSL *a);
 int q_SSL_set_session(SSL *to, SSL_SESSION *session);
+SSL_CTX *q_SSL_set_SSL_CTX(SSL *ssl, SSL_CTX *ctx);
 void q_SSL_SESSION_free(SSL_SESSION *ses);
 SSL_SESSION *q_SSL_get1_session(SSL *ssl);
 SSL_SESSION *q_SSL_get_session(const SSL *ssl);

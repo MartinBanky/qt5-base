@@ -116,3 +116,44 @@ QSslSocket socket;
 socket.ignoreSslErrors(expectedSslErrors);
 socket.connectToHostEncrypted("server.tld", 443);
 //! [6]
+
+
+//! [7]
+void SslServer::incomingConnection(qintptr socketDescriptor)
+{
+    QSslSocket *serverSocket = new QSslSocket;
+
+    if (serverSocket->setSocketDescriptor(socketDescriptor)) {
+        addPendingConnection(serverSocket);
+    } else {
+        delete serverSocket;
+    }
+}
+//! [7]
+
+
+//! [8]
+void SniServer::newSslConnection()
+{
+        QSslSocket *sslSocket = qobject_cast<QSslSocket *>(m_sslServer->nextPendingConnection());
+
+        sslSocket->setServerNameIndicationModeEnabled();
+        sslSocket->startServerEncryption();
+
+        QObject::connect(sslSocket, &QSslSocket::readyRead, this, &SniServer::readInputHttps);
+        QObject::connect(sslSocket, &QSslSocket::disconnected, this, &SniServer::disconnectedHttpsClient);
+        QObject::connect(sslSocket, &QSslSocket::serverNameIndicatorReady, this, &SniServer::readServerNameIndicator);
+}
+//! [8]
+
+
+//! [9]
+void SniServer::readServerNameIndicator(const QByteArray serverNameIndicator)
+{
+        QSslSocket *sslSocket(qobject_cast<QSslSocket *>(sender()));
+
+        sslSocket->setPrivateKey(serverNameIndicator + ".key.pem");
+        sslSocket->setLocalCertificate(serverNameIndicator + ".cert.pem");
+        sslSocket->resumeHandshake();
+}
+//! [9]

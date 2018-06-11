@@ -96,6 +96,23 @@
 
     \snippet code/src_network_ssl_qsslsocket.cpp 1
 
+    To implement a Server Name Indication (SNI) enabled SSL server,
+    subclass QTcpServer and override QTcpServer::incomingConnection()
+    like the example below.
+
+    \snippet code/src_network_ssl_qsslsocket.cpp 7
+
+    For the SslServer, add the code for handling new incoming
+    connections.
+
+    \snippet code/src_network_ssl_qsslsocket.cpp 8
+
+    Then setup a slot for the serverNameIndicatorReady() signal.
+
+    \snippet code/src_network_ssl_qsslsocket.cpp 9
+
+    See the \l sslclient and \l sslserver examples
+
     If an error occurs, QSslSocket emits the sslErrors() signal. In this
     case, if no action is taken to ignore the error(s), the connection
     is dropped. To continue, despite the occurrence of an error, you
@@ -307,6 +324,18 @@
     deleted by the application.
 
     \sa QSslPreSharedKeyAuthenticator
+*/
+
+/*!
+    \fn void QSslSocket::serverNameIndicatorReady(const QByteArray serverNameIndicator)
+    \since 5.12
+
+    QSslSocket emits this signal when it has received the Server Name Indication.
+    This signal is used when running an SSL SNI enabled server class.
+
+    \note Call setServerNameIndicationModeEnabled() first to enable SNI mode.
+
+    \sa resumeHandshake()
 */
 
 #include "qssl_p.h"
@@ -1173,6 +1202,41 @@ QSslKey QSslSocket::privateKey() const
 {
     Q_D(const QSslSocket);
     return d->configuration.privateKey;
+}
+
+/*!
+    Enables server side Server Name Indication support. Use with
+    the serverNameIndicatorReady() signal and resumeHandshake().
+
+    \sa serverNameIndicatorReady(), resumeHandshake()
+ */
+void QSslSocket::setServerNameIndicationModeEnabled()
+{
+    Q_D(QSslSocket);
+    d->sniMode = true;
+}
+
+/*!
+    Call after receiving the serverNameIndicatorReady() signal
+    to continue setting up the QSslSocket connection.
+
+    \note Be sure to call setPrivateKey() and setLocalCertificate()
+    before calling resumeHandshake().
+ */
+void QSslSocket::resumeHandshake()
+{
+    Q_D(QSslSocket);
+    if (d->mode != SslServerMode) {
+        qCWarning(lcSsl,
+                  "QSslSocket::resumeHandshake: cannot resume handshake on non-server connection");
+        return;
+    }
+#ifdef QSSLSOCKET_DEBUG
+    qCDebug(lcSsl) << "QSslSocket::resumeHandshake()";
+#endif
+    d->sniMode = false;
+    d->pauseHandshake = false;
+    d->resumeHandshake();
 }
 
 /*!
@@ -2048,6 +2112,9 @@ QSslSocketPrivate::QSslSocketPrivate()
     , ignoreAllSslErrors(false)
     , readyReadEmittedPointer(0)
     , allowRootCertOnDemandLoading(true)
+    , sniMode(false)
+    , pauseHandshake(false)
+    , clientHelloMessage(0)
     , plainSocket(0)
     , paused(false)
     , flushTriggered(false)
@@ -2799,6 +2866,172 @@ bool QSslSocketPrivate::isMatchingHostname(const QString &cn, const QString &hos
 
     // Ok, I guess this was a wildcard CN and the hostname matches.
     return true;
+}
+
+/*!
+    \internal
+*/
+void QSslSocketPrivate::getServerNameIndicator(const QByteArray clientHelloMessage)
+{
+    if (clientHelloMessage.at(ContentTypeIndex) == HandshakeType) {
+        uqint32 length;
+        length.s32 = 0;
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+        length.s8[1] = clientHelloMessage.at(ContentLengthMsbIndex);
+        length.s8[0] = clientHelloMessage.at(ContentLengthLsbIndex);
+#else
+        length.s8[2] = clientHelloMessage.at(ContentLengthMsbIndex);
+        length.s8[3] = clientHelloMessage.at(ContentLengthLsbIndex);
+#endif
+        if (clientHelloMessage.size() >= length.s32) {
+            if (clientHelloMessage.at(HandshakeTypeIndex) == ClientHelloType) {
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+                length.s8[2] = clientHelloMessage.at(HandshakeLengthMsbIndex);
+                length.s8[1] = clientHelloMessage.at(HandshakeLengthNsbIndex);
+                length.s8[0] = clientHelloMessage.at(HandshakeLengthLsbIndex);
+#else
+                length.s8[1] = clientHelloMessage.at(HandshakeLengthMsbIndex);
+                length.s8[2] = clientHelloMessage.at(HandshakeLengthNsbIndex);
+                length.s8[3] = clientHelloMessage.at(HandshakeLengthLsbIndex);
+#endif
+
+                if (clientHelloMessage.mid(ClientHelloMsgStartIndex).size() >= length.s32) {
+                    /*
+                     * Start the process of finding the SNI in the following order
+                     * of operations.
+                     *
+                     * Get the Cipher Suites Length index
+                     * Get the Cipher Suites length
+                     * Get the Compression Methods Length index
+                     * Get the Compression Methods length
+                     * Get the Extensions Length index
+                     * Get the Extensions length
+                     */
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+                    length.s8[2] = 0;
+                    // index = SessionIdLengthIndex + the one byte that it takes up, plus the length
+                    // of the Session Id
+                    qint32 index = SessionIdLengthIndex + 1 + clientHelloMessage.at(SessionIdLengthIndex);
+                    length.s8[1] = clientHelloMessage.at(index);
+                    length.s8[0] = clientHelloMessage.at(++index);
+                    index += length.s32;
+                    length.s8[1] = 0;
+                    length.s8[0] = clientHelloMessage.at(++index);
+                    index += length.s32;
+                    length.s8[1] = clientHelloMessage.at(++index);
+                    length.s8[0] = clientHelloMessage.at(++index);
+#else
+                    length.s8[1] = 0;
+                    // index = SessionIdLengthIndex + the one byte that it takes up, plus the length
+                    // of the Session Id
+                    qint32 index = SessionIdLengthIndex + 1 + clientHelloMessage.at(SessionIdLengthIndex);
+                    length.s8[2] = clientHelloMessage.at(index);
+                    length.s8[3] = clientHelloMessage.at(++index);
+                    index += length.s32;
+                    length.s8[2] = 0;
+                    length.s8[3] = clientHelloMessage.at(++index);
+                    index += length.s32;
+                    length.s8[2] = clientHelloMessage.at(++index);
+                    length.s8[3] = clientHelloMessage.at(++index);
+#endif
+
+                    // Make sure the Extensions Length is the right length
+                    if (clientHelloMessage.mid(++index).size() >= length.s32) {
+                        uqint32 extensionType;
+                        extensionType.s32 = 0;
+
+                        qint32 clienntHelloMessageSize = clientHelloMessage.size();
+
+                        for (; index + 4 < clienntHelloMessageSize; index += length.s32) {
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+                            extensionType.s8[1] = clientHelloMessage.at(index);
+                            extensionType.s8[0] = clientHelloMessage.at(++index);
+                            // Get Extension Type Length (use for bounds checking)
+                            length.s8[1] = clientHelloMessage.at(++index);
+                            length.s8[0] = clientHelloMessage.at(++index);
+#else
+                            extensionType.s8[2] = clientHelloMessage.at(index);
+                            extensionType.s8[3] = clientHelloMessage.at(++index);
+                            // Get Extension Type Length (use for bounds checking)
+                            length.s8[2] = clientHelloMessage.at(++index);
+                            length.s8[3] = clientHelloMessage.at(++index);
+#endif
+                            ++index;
+
+                            if (extensionType.s32 == ServerNameType) {
+                                if (clientHelloMessage.mid(index).size() >= length.s32) {
+                                    // Server Name Type: host_name (check server name type)
+                                    index += 2;
+
+                                    if (index < clienntHelloMessageSize) {
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+                                        extensionType.s8[1] = 0;
+                                        extensionType.s8[0] = clientHelloMessage.at(index);
+#else
+                                        extensionType.s8[2] = 0;
+                                        extensionType.s8[3] = clientHelloMessage.at(index);
+#endif
+
+                                        if (extensionType.s32 == HostNameType) {
+                                            // Get the length of the SNI
+                                            if (index < clienntHelloMessageSize) {
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+                                                length.s8[1] = clientHelloMessage.at(++index);
+                                                length.s8[0] = clientHelloMessage.at(++index);
+#else
+                                                length.s8[2] = clientHelloMessage.at(++index);
+                                                length.s8[3] = clientHelloMessage.at(++index);
+#endif
+                                                // Get the SNI
+                                                const QByteArray sni(clientHelloMessage.mid(++index, length.s32));
+
+                                                Q_Q(QSslSocket);
+                                                emit q->serverNameIndicatorReady(sni);
+                                                break;
+                                            } else {
+                                                qCWarning(lcSsl, "QSslSocketPrivate::getSni: Oops, "
+                                                          "we are at the end of the message, and "
+                                                          "cannot go on.");
+                                            }
+                                        } else {
+                                            qCWarning(lcSsl, "QSslSocketPrivate::getSni: Server Name"
+                                                      " Type does not have a Host Name Type");
+                                        }
+                                    } else {
+                                        qCWarning(lcSsl, "QSslSocketPrivate::getSni: Oops, we are "
+                                                  "at the end of the message, and cannot go on.");
+                                    }
+                                } else {
+                                    qCWarning(lcSsl) << "QSslSocketPrivate::getSni: Server Name Type"
+                                                     " length" << clientHelloMessage.mid(index).size()
+                                                     << "is to big.\nExtension length:" << length.s32;
+                                }
+                            }
+                        }
+                    } else {
+                        qCWarning(lcSsl) << "QSslSocketPrivate::getSni: Extensions length is not the"
+                                         " declared length\nClaimed length:" << length.s32 << "Actual length:"
+                                         << clientHelloMessage.mid(index).size();
+                    }
+                } else {
+                    qCWarning(lcSsl) << "QSslSocketPrivate::getSni: ClientHello message is not the "
+                                     "declared length.\nClaimed length:" << length.s32 << "Actual length:"
+                                     << clientHelloMessage.mid(ClientHelloMsgStartIndex).size();
+                }
+            } else {
+                qCWarning(lcSsl) << "QSslSocketPrivate::getSni: Handshake is not of type "
+                                 "ClientHello. Reported type:" << clientHelloMessage.at(HandshakeTypeIndex);
+            }
+        } else {
+            qCWarning(lcSsl) << "QSslSocketPrivate::getSni: ClientHello message is not the declared"
+                             " length.\nClaimed length:" << length.s32 << "Actual length:"
+                             << clientHelloMessage.size();
+        }
+    } else {
+        qCWarning(lcSsl)
+                << "QSslSocketPrivate::getSni: ClientHello message is not of type Handshake. "
+                "Reported type:" << clientHelloMessage.at(ContentTypeIndex);
+    }
 }
 
 QT_END_NAMESPACE

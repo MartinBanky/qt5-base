@@ -379,6 +379,26 @@ bool QSslSocketBackendPrivate::initSslContext()
     return true;
 }
 
+bool QSslSocketBackendPrivate::switchSslContext()
+{
+    // Clear sslContextPointer in preparation for creating a new context
+    sslContextPointer.clear();
+    // create a deep copy of our configuration
+    QSslConfigurationPrivate *configurationCopy = new QSslConfigurationPrivate(configuration);
+    configurationCopy->ref.store(0);              // the QSslConfiguration constructor refs up
+    sslContextPointer = QSslContext::sharedFromConfiguration(mode, configurationCopy, allowRootCertOnDemandLoading);
+
+    if (sslContextPointer->error() != QSslError::NoError) {
+        setErrorAndEmit(QAbstractSocket::SslInvalidUserDataError, sslContextPointer->errorString());
+        sslContextPointer.clear(); // deletes the QSslContext
+        return false;
+    }
+
+    sslContextPointer->switchSslContext(ssl);
+
+    return true;
+}
+
 void QSslSocketBackendPrivate::destroySslContext()
 {
     if (ssl) {
@@ -578,6 +598,22 @@ QList<QSslCertificate> QSslSocketPrivate::systemCaCertificates()
 }
 #endif // Q_OS_DARWIN
 
+void QSslSocketBackendPrivate::resumeHandshake()
+{
+    if (!switchSslContext()) {
+        setErrorAndEmit(QAbstractSocket::SslInternalError,
+                        QSslSocket::tr("Unable to init SSL Context: %1").arg(getErrorsFromOpenSsl()));
+        return;
+    }
+
+    /* Resume the handshake, now that we have the right cert.
+     * This will place outgoing data in the BIO, so we
+     * follow up with calling transmit().
+     */
+    startHandshake();
+    transmit();
+}
+
 void QSslSocketBackendPrivate::startClientEncryption()
 {
     if (!initSslContext()) {
@@ -701,6 +737,10 @@ void QSslSocketBackendPrivate::transmit()
                 // just peek() here because q_BIO_write could write less data than expected
                 int encryptedBytesRead = plainSocket->peek(data.data(), pendingBytes);
 
+                if (sniMode) {
+                    clientHelloMessage.append(data.data(), encryptedBytesRead);
+                }
+
 #ifdef QSSLSOCKET_DEBUG
                 qCDebug(lcSsl) << "QSslSocketBackendPrivate::transmit: read" << encryptedBytesRead << "encrypted bytes from the socket";
 #endif
@@ -719,6 +759,16 @@ void QSslSocketBackendPrivate::transmit()
                 }
 
                 transmitting = true;
+
+                if (sniMode && !clientHelloMessage.isEmpty()) {
+#ifdef QSSLSOCKET_DEBUG
+                    qCDebug(lcSsl) << "clientHelloMessage size:" << clientHelloMessage.size();
+#endif
+                    transmitting = false;
+                    pauseHandshake = true;
+                    getServerNameIndicator(clientHelloMessage);
+                    clientHelloMessage.clear();
+                }
             }
 
         // If the connection isn't secured yet, this is the time to retry the
@@ -727,17 +777,23 @@ void QSslSocketBackendPrivate::transmit()
 #ifdef QSSLSOCKET_DEBUG
             qCDebug(lcSsl) << "QSslSocketBackendPrivate::transmit: testing encryption";
 #endif
-            if (startHandshake()) {
+            if (!pauseHandshake) {
+                if (startHandshake()) {
 #ifdef QSSLSOCKET_DEBUG
-                qCDebug(lcSsl) << "QSslSocketBackendPrivate::transmit: encryption established";
+                    qCDebug(lcSsl) << "QSslSocketBackendPrivate::transmit: encryption established";
 #endif
-                connectionEncrypted = true;
-                transmitting = true;
-            } else if (plainSocket->state() != QAbstractSocket::ConnectedState) {
+                    connectionEncrypted = true;
+                    transmitting = true;
+                }
+            }
+
+            if (plainSocket->state() != QAbstractSocket::ConnectedState) {
 #ifdef QSSLSOCKET_DEBUG
-                qCDebug(lcSsl) << "QSslSocketBackendPrivate::transmit: connection lost";
+                    qCDebug(lcSsl) << "QSslSocketBackendPrivate::transmit: connection lost";
 #endif
-                break;
+                    sniMode = false;
+                    pauseHandshake = false;
+                    break;
             } else if (paused) {
                 // just wait until the user continues
                 return;
